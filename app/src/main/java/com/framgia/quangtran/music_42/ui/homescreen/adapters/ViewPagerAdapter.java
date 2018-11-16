@@ -1,9 +1,11 @@
-package com.framgia.quangtran.music_42.ui.homescreen;
+package com.framgia.quangtran.music_42.ui.homescreen.adapters;
 
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
 import com.framgia.quangtran.music_42.ui.homescreen.fragments.HomeFragment;
 import com.framgia.quangtran.music_42.ui.homescreen.fragments.PersonalFragment;
 import com.framgia.quangtran.music_42.ui.homescreen.fragments.SettingFragment;
@@ -16,16 +18,18 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     private static final int TAB_HOME = 0;
     private static final int TAB_PERSONAL = 1;
     private static final int TAB_SETTING = 2;
+    public Bundle mBundle;
 
-    public ViewPagerAdapter(FragmentManager fm) {
+    public ViewPagerAdapter(FragmentManager fm, Bundle bundle) {
         super(fm);
+        mBundle = bundle;
     }
 
     @Override
     public Fragment getItem(int i) {
         switch (i) {
             case TAB_HOME:
-                return new HomeFragment();
+                return HomeFragment.getInstance(mBundle);
             case TAB_PERSONAL:
                 return new PersonalFragment();
             case TAB_SETTING:

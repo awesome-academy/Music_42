@@ -3,12 +3,12 @@ package com.framgia.quangtran.music_42.data.model;
 public class Genre {
     private String mName;
     private String mKey;
-    private String mImageUrl;
+    private int mImageUrl;
 
-    public Genre(String genreName, String key, String ImageUrl) {
+    public Genre(@GenreName String genreName, @GenreKey String key, int imageUrl) {
         mName = genreName;
         mKey = key;
-        mImageUrl = ImageUrl;
+        mImageUrl = imageUrl;
     }
 
     public String getName() {
@@ -27,11 +27,11 @@ public class Genre {
         mKey = key;
     }
 
-    public String getImageUrl() {
+    public int getImageUrl() {
         return mImageUrl;
     }
 
-    public void setImageUrl(String ImageUrl) {
-        mImageUrl = ImageUrl;
+    public void setImageUrl(int imageUrl) {
+        mImageUrl = imageUrl;
     }
 }

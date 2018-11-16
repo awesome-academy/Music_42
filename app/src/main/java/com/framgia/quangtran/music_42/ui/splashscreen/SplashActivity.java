@@ -2,6 +2,7 @@ package com.framgia.quangtran.music_42.ui.splashscreen;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -21,12 +22,15 @@ import com.framgia.quangtran.music_42.data.source.remote.TrackRemoteDataSource;
 import com.framgia.quangtran.music_42.ui.homescreen.HomeActivity;
 import com.framgia.quangtran.music_42.util.StringUtil;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class SplashActivity extends AppCompatActivity implements SplashContract.View {
     private static final int READ_EXTERNAL_STORAGE = 1;
     private static final int DELAY_MILLIS = 2000;
-    private static final int OFFSET = 10;
+    private static final int OFFSET = 1;
+    public static final int LIMIT = 8;
+    private static final String TRACKS = "tracks";
     private String mApi;
     private Handler mHandler;
     private ContentResolver mContentResolverCursor;
@@ -38,8 +42,11 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         setContentView(R.layout.activity_splash);
         initUI();
         StringUtil util = new StringUtil();
-        mApi = StringUtil.GenreApi(GenreKey.ALL_MUSIC, OFFSET);
+        mApi = StringUtil.genreApi(GenreKey.ALL_MUSIC, LIMIT, OFFSET);
         checkPermission(mApi);
+    }
+
+    private void getData() {
     }
 
     void initUI() {
@@ -59,7 +66,6 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
             return;
         }
         mSlashPresenter.loadOnlineMusic(api);
-        DelayLoadData();
     }
 
     public void DelayLoadData() {
@@ -83,16 +89,24 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
             if (grantResults.length > 0 && grantResults[0] != PackageManager
                     .PERMISSION_DENIED) {
                 mSlashPresenter.loadOnlineMusic(mApi);
-                DelayLoadData();
                 return;
             }
         }
         mSlashPresenter.loadOnlineMusic(mApi);
-        DelayLoadData();
     }
 
     @Override
     public void onSuccess(List<Track> tracks) {
+        startActivity(getProfileIntent(SplashActivity.this, tracks));
+    }
+
+    public static Intent getProfileIntent(Context context, List<Track> tracks) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(TRACKS, (Serializable) tracks);
+        Intent HomeScreen = new Intent(context,
+                HomeActivity.class);
+        HomeScreen.putExtras(bundle);
+        return HomeScreen;
     }
 
     @Override

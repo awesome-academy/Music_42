@@ -12,9 +12,9 @@ import java.lang.annotation.RetentionPolicy;
 })
 
 public @interface GenreName {
-    String ALL_MUSIC = "All music";
-    String ALL_AUDIO = "All audio";
-    String ALTERNATIVE = "Alternative rock";
+    String ALL_MUSIC = "All Music";
+    String ALL_AUDIO = "All Audio";
+    String ALTERNATIVE = "Alternative Rock";
     String AMBIENT = "Ambient";
     String CLASSICAL = "Classical";
     String COUNTRY = "Country";

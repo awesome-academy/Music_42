@@ -9,12 +9,21 @@ public class Track implements Serializable {
     private String mArtWorkUrl;
     private String mGenre;
     private String mDescription;
+    private String mUserName;
     private int mDuration;
     private String mDownLoadUrl;
     private boolean mIsDownload;
     private boolean mIsOffline;
 
     public Track() {
+    }
+
+    public String getUserName() {
+        return mUserName;
+    }
+
+    public void setUserName(String userName) {
+        mUserName = userName;
     }
 
     public String getTitle() {

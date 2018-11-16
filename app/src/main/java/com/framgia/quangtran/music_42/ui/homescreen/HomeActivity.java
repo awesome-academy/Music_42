@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.framgia.quangtran.music_42.R;
+import com.framgia.quangtran.music_42.ui.homescreen.adapters.ViewPagerAdapter;
 
 public class HomeActivity extends AppCompatActivity {
     private ViewPager mViewPagerMusic;
@@ -16,8 +17,9 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        Bundle bundle = getIntent().getExtras();
         mViewPagerMusic = findViewById(R.id.view_pager);
-        mViewPagerMusic.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
+        mViewPagerMusic.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(), bundle));
         mTabLayout = findViewById(R.id.tab_layout);
         mTabLayout.setupWithViewPager(mViewPagerMusic);
     }

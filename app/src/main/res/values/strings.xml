@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Music_42</string>
-    <string name="genres">#GENRES</string>
-    <string name="hot_today">Hot Today</string>
-    <string name="search_music">Search Music</string>
+    <string name="title_genres">#GENRES</string>
+    <string name="title_hot_today">#Hot Today</string>
+    <string name="title_search_music">Search Music</string>
+    <string name="title_sound_cloud">SoundCloud</string>
 </resources>
