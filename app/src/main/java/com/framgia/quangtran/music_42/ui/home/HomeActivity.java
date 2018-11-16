@@ -1,4 +1,4 @@
-package com.framgia.quangtran.music_42.ui.homescreen;
+package com.framgia.quangtran.music_42.ui.home;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,7 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.framgia.quangtran.music_42.R;
-import com.framgia.quangtran.music_42.ui.homescreen.adapters.ViewPagerAdapter;
+import com.framgia.quangtran.music_42.ui.home.adapters.ViewPagerAdapter;
 
 public class HomeActivity extends AppCompatActivity {
     private ViewPager mViewPagerMusic;

@@ -1,4 +1,4 @@
-package com.framgia.quangtran.music_42.ui.homescreen.adapters;
+package com.framgia.quangtran.music_42.ui.home.adapters;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,14 +6,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.framgia.quangtran.music_42.ui.homescreen.fragments.HomeFragment;
-import com.framgia.quangtran.music_42.ui.homescreen.fragments.PersonalFragment;
-import com.framgia.quangtran.music_42.ui.homescreen.fragments.SettingFragment;
+import com.framgia.quangtran.music_42.data.model.Track;
+import com.framgia.quangtran.music_42.ui.home.HomeFragment;
+import com.framgia.quangtran.music_42.ui.personal.PersonalFragment;
+import com.framgia.quangtran.music_42.ui.setting.SettingFragment;
+
+import java.util.List;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
     private static final String HOME = "HOME";
     private static final String PERSONAL = "PERSONAL";
     private static final String SETTING = "SETTING";
+    private static final String BUNDLE_TRACKS = "tracks";
     private static final int TOTAL_TABS = 3;
     private static final int TAB_HOME = 0;
     private static final int TAB_PERSONAL = 1;
@@ -29,11 +33,14 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         switch (i) {
             case TAB_HOME:
-                return HomeFragment.getInstance(mBundle);
+                if (mBundle != null) {
+                    List<Track> tracks = mBundle.getParcelableArrayList(BUNDLE_TRACKS);
+                    return HomeFragment.newInstance(tracks);
+                }
             case TAB_PERSONAL:
-                return new PersonalFragment();
+                return PersonalFragment.newInstance();
             case TAB_SETTING:
-                return new SettingFragment();
+                return SettingFragment.newInstance();
         }
         return null;
     }

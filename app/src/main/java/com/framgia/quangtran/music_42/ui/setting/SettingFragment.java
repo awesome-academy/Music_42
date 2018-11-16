@@ -1,4 +1,4 @@
-package com.framgia.quangtran.music_42.ui.homescreen.fragments;
+package com.framgia.quangtran.music_42.ui.setting;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,11 +10,16 @@ import android.view.ViewGroup;
 
 import com.framgia.quangtran.music_42.R;
 
-public class PersonalFragment extends Fragment {
+public class SettingFragment extends Fragment {
+    public static SettingFragment newInstance(){
+        SettingFragment settingFragment = new SettingFragment();
+        return settingFragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_personal, container, false);
+        return inflater.inflate(R.layout.fragment_setting, container, false);
     }
 }

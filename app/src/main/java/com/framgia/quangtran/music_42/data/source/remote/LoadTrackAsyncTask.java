@@ -12,14 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoadTrackAsyncTask extends BaseLoadTracksAsyncTask<Track> {
-    public static final String ID = "id";
-    private static final String TITLE = "title";
-    private static final String TRACK = "track";
-    private static final String ARTWORK_URL = "artwork_url";
-    private static final String COLLECTION = "collection";
-    private static final String USER = "user";
-    private static final String USER_NAME = "username";
-
     public LoadTrackAsyncTask(TrackDataSource.DataCallback<Track> callback) {
         super(callback);
     }
@@ -29,15 +21,15 @@ public class LoadTrackAsyncTask extends BaseLoadTracksAsyncTask<Track> {
         List<Track> tracks = new ArrayList<>();
         try {
             JSONObject result = new JSONObject(jsonString);
-            JSONArray trackArray = result.getJSONArray(COLLECTION);
+            JSONArray trackArray = result.getJSONArray(Track.JSONKey.COLLECTION);
             for (int i = 0; i < trackArray.length(); i++) {
                 JSONObject trackDetail = trackArray.getJSONObject(i);
-                JSONObject trackInfo = trackDetail.getJSONObject(TRACK);
-                int id = trackInfo.getInt(ID);
-                String tittle = trackInfo.getString(TITLE);
-                String artwork = trackInfo.getString(ARTWORK_URL);
-                JSONObject userDetail = trackInfo.getJSONObject(USER);
-                String fullname = userDetail.getString(USER_NAME);
+                JSONObject trackInfo = trackDetail.getJSONObject(Track.JSONKey.TRACK);
+                int id = trackInfo.getInt(Track.JSONKey.ID);
+                String tittle = trackInfo.getString(Track.JSONKey.TITLE);
+                String artwork = trackInfo.getString(Track.JSONKey.ARTWORK_URL);
+                JSONObject userDetail = trackInfo.getJSONObject(Track.JSONKey.KEY_USER);
+                String fullname = userDetail.getString(Track.JSONKey.KEY_USER_NAME);
                 Track track = new Track();
                 track.setId(id);
                 track.setTitle(tittle);

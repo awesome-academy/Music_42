@@ -1,4 +1,4 @@
-package com.framgia.quangtran.music_42.ui.splashscreen;
+package com.framgia.quangtran.music_42.ui.splash;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -19,10 +20,10 @@ import com.framgia.quangtran.music_42.data.model.Track;
 import com.framgia.quangtran.music_42.data.repository.TrackRepository;
 import com.framgia.quangtran.music_42.data.source.local.TrackLocalDataSource;
 import com.framgia.quangtran.music_42.data.source.remote.TrackRemoteDataSource;
-import com.framgia.quangtran.music_42.ui.homescreen.HomeActivity;
+import com.framgia.quangtran.music_42.ui.home.HomeActivity;
 import com.framgia.quangtran.music_42.util.StringUtil;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SplashActivity extends AppCompatActivity implements SplashContract.View {
@@ -44,9 +45,6 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         StringUtil util = new StringUtil();
         mApi = StringUtil.genreApi(GenreKey.ALL_MUSIC, LIMIT, OFFSET);
         checkPermission(mApi);
-    }
-
-    private void getData() {
     }
 
     void initUI() {
@@ -97,12 +95,12 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
 
     @Override
     public void onSuccess(List<Track> tracks) {
-        startActivity(getProfileIntent(SplashActivity.this, tracks));
+        startActivity(getHomeIntent(SplashActivity.this, tracks));
     }
 
-    public static Intent getProfileIntent(Context context, List<Track> tracks) {
+    public static Intent getHomeIntent(Context context, List<Track> tracks) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(TRACKS, (Serializable) tracks);
+        bundle.putParcelableArrayList(TRACKS, (ArrayList<? extends Parcelable>) tracks);
         Intent HomeScreen = new Intent(context,
                 HomeActivity.class);
         HomeScreen.putExtras(bundle);
