@@ -1,6 +1,5 @@
 package com.framgia.quangtran.music_42.data.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Playlist {
