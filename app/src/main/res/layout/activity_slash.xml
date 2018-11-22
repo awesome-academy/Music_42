@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.slashscreen.MainActivity">
+    android:background="@drawable/soundclound"
+    tools:context=".ui.slashscreen.SplashActivity">
 
 </android.support.constraint.ConstraintLayout>
