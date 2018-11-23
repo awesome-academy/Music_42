@@ -1,7 +1,4 @@
-package com.framgia.quangtran.music_42.ui.slashscreen;
-
-import android.content.ContentResolver;
-import android.content.Context;
+package com.framgia.quangtran.music_42.ui.splashscreen;
 
 import com.framgia.quangtran.music_42.data.model.Track;
 import com.framgia.quangtran.music_42.data.repository.TrackRepository;
@@ -16,21 +13,6 @@ public class SplashPresenter implements SplashContract.Presenter {
     public SplashPresenter(TrackRepository repository, SplashActivity view) {
         this.mRepository = repository;
         this.mView = view;
-    }
-
-    @Override
-    public void loadOfflineMusic(ContentResolver contentResolver) {
-        mRepository.getOfflineTracks(contentResolver, new TrackDataSource.DataCallback<Track>() {
-            @Override
-            public void onSuccess(List<Track> tracks) {
-                mView.onSuccess(tracks);
-            }
-
-            @Override
-            public void onFailed(String message) {
-                mView.onFailure(message);
-            }
-        });
     }
 
     @Override

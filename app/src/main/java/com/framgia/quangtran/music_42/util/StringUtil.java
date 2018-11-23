@@ -2,7 +2,7 @@ package com.framgia.quangtran.music_42.util;
 
 import com.framgia.quangtran.music_42.BuildConfig;
 import com.framgia.quangtran.music_42.data.model.GenreKey;
-import com.framgia.quangtran.music_42.ui.Contracts;
+import com.framgia.quangtran.music_42.ui.Constant;
 
 public class StringUtil {
     public static String append(String... strings) {
@@ -14,9 +14,9 @@ public class StringUtil {
     }
 
     public static String GenreApi(@GenreKey String genreKey, int offset) {
-        return StringUtil.append(Contracts.BASE_URL_GENRES, genreKey,
-                Contracts.CLIENT_ID, BuildConfig.API_KEY,
-                Contracts.PARAMETER_LIMIT, String.valueOf(Contracts.LIMIT),
-                Contracts.PARAMETER_OFFSET, String.valueOf(offset));
+        return StringUtil.append(Constant.BASE_URL_GENRES, genreKey,
+                Constant.CLIENT_ID, BuildConfig.API_KEY,
+                Constant.PARAMETER_LIMIT, String.valueOf(Constant.LIMIT),
+                Constant.PARAMETER_OFFSET, String.valueOf(offset));
     }
 }

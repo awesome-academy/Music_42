@@ -1,7 +1,4 @@
-package com.framgia.quangtran.music_42.ui.slashscreen;
-
-import android.content.ContentResolver;
-import android.content.Context;
+package com.framgia.quangtran.music_42.ui.splashscreen;
 
 import com.framgia.quangtran.music_42.data.model.Track;
 
@@ -15,8 +12,6 @@ public interface SplashContract<T> {
     }
 
     interface Presenter {
-        void loadOfflineMusic(ContentResolver contentResolver);
-
         void loadOnlineMusic(String api);
     }
 }

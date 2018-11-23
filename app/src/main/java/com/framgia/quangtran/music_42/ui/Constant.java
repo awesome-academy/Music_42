@@ -1,6 +1,6 @@
 package com.framgia.quangtran.music_42.ui;
 
-public class Contracts {
+public class Constant {
     public static final String CLIENT_ID = "&client_id=";
     public static final String BASE_URL_GENRES = "https://api-v2.soundcloud.com/charts?kind=top&genre=";
     public static final String BASE_URL_TRACK = "http://api.soundcloud.com/tracks";

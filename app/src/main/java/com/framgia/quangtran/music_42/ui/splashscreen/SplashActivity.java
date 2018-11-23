@@ -1,19 +1,15 @@
-package com.framgia.quangtran.music_42.ui.slashscreen;
+package com.framgia.quangtran.music_42.ui.splashscreen;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.framgia.quangtran.music_42.R;
@@ -39,7 +35,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_slash);
+        setContentView(R.layout.activity_splash);
         initUI();
         StringUtil util = new StringUtil();
         mApi = StringUtil.GenreApi(GenreKey.ALL_MUSIC, OFFSET);
@@ -62,7 +58,6 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
                     , READ_EXTERNAL_STORAGE);
             return;
         }
-        mSlashPresenter.loadOfflineMusic(mContentResolverCursor);
         mSlashPresenter.loadOnlineMusic(api);
         DelayLoadData();
     }
@@ -87,7 +82,6 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         if (requestCode == READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager
                     .PERMISSION_DENIED) {
-                mSlashPresenter.loadOfflineMusic(mContentResolverCursor);
                 mSlashPresenter.loadOnlineMusic(mApi);
                 DelayLoadData();
                 return;
