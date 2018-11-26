@@ -12,8 +12,7 @@
         android:scaleType="fitXY"
         android:src="@drawable/soundcloud"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_name_track"

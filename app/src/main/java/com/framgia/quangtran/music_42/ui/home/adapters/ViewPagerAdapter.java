@@ -11,13 +11,13 @@ import com.framgia.quangtran.music_42.ui.home.HomeFragment;
 import com.framgia.quangtran.music_42.ui.personal.PersonalFragment;
 import com.framgia.quangtran.music_42.ui.setting.SettingFragment;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
     private static final String HOME = "HOME";
     private static final String PERSONAL = "PERSONAL";
     private static final String SETTING = "SETTING";
-    private static final String BUNDLE_TRACKS = "tracks";
+    private static final String BUNDLE_TRACKS = "com.framgia.quangtran.music_42.ui.genre.BUNDLE_TRACKS";
     private static final int TOTAL_TABS = 3;
     private static final int TAB_HOME = 0;
     private static final int TAB_PERSONAL = 1;
@@ -34,7 +34,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         switch (i) {
             case TAB_HOME:
                 if (mBundle != null) {
-                    List<Track> tracks = mBundle.getParcelableArrayList(BUNDLE_TRACKS);
+                    ArrayList<Track> tracks = mBundle.getParcelableArrayList(BUNDLE_TRACKS);
                     return HomeFragment.newInstance(tracks);
                 }
             case TAB_PERSONAL:

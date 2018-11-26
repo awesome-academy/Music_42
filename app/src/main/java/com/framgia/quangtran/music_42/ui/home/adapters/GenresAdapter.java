@@ -19,7 +19,7 @@ public class GenresAdapter extends RecyclerView.Adapter<GenresAdapter.ViewHolder
     private GenreClickListener mListener;
     private LayoutInflater mInflater;
 
-    public GenresAdapter(GenreClickListener listener, List<Genre> genres) {
+    public GenresAdapter(List<Genre> genres, GenreClickListener listener) {
         this.mListener = listener;
         this.mGenres = genres;
     }
@@ -32,7 +32,7 @@ public class GenresAdapter extends RecyclerView.Adapter<GenresAdapter.ViewHolder
         }
         View contactView = mInflater.inflate(R.layout.item_recycler_genres_home, viewGroup,
                 false);
-        return new GenresAdapter.ViewHolder(contactView);
+        return new GenresAdapter.ViewHolder(contactView, mListener);
     }
 
     @Override
@@ -45,22 +45,24 @@ public class GenresAdapter extends RecyclerView.Adapter<GenresAdapter.ViewHolder
         return mGenres != null ? mGenres.size() : 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTextGenreName;
         private ImageView mImageGenre;
         private ConstraintLayout mConstraintLayout;
         private Genre mGenre;
+        private GenreClickListener mGenreClickListener;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, GenreClickListener genreClickListener) {
             super(itemView);
             mConstraintLayout = itemView.findViewById(R.id.constraint_genre);
             mTextGenreName = itemView.findViewById(R.id.text_name_genre);
             mImageGenre = itemView.findViewById(R.id.image_genre);
             mConstraintLayout.setOnClickListener(this);
+            mGenreClickListener = genreClickListener;
         }
 
         private void bindData(Genre genre) {
-            if(genre == null) return;
+            if (genre == null) return;
             mImageGenre.setImageResource(genre.getImageUrl());
             mTextGenreName.setText(genre.getName());
             mGenre = genre;
@@ -70,13 +72,13 @@ public class GenresAdapter extends RecyclerView.Adapter<GenresAdapter.ViewHolder
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.constraint_genre:
-                    mListener.onItemClickGenre(mGenre);
+                    mGenreClickListener.onItemClickGenre(mGenre);
                     break;
             }
         }
     }
 
-        public interface GenreClickListener {
+    public interface GenreClickListener {
         void onItemClickGenre(Genre genre);
     }
 }

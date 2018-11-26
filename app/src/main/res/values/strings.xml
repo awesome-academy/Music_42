@@ -4,5 +4,8 @@
     <string name="title_hot_today">#Hot Today</string>
     <string name="title_search_music">Search Music</string>
     <string name="title_sound_cloud">SoundCloud</string>
-    <string name="title_music">MUSIC 42</string>
+    <string name="title_download">Download</string>
+    <string name="title_local">Local</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="recent_music">Recent Music</string>
 </resources>
