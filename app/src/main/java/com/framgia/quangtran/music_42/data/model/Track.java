@@ -15,6 +15,7 @@ public class Track implements Parcelable {
     private String mDownLoadUrl;
     private boolean mIsDownload;
     private boolean mIsOffline;
+    private boolean mFavorite = false;
 
     public Track() {
     }
@@ -31,6 +32,7 @@ public class Track implements Parcelable {
         mDownLoadUrl = in.readString();
         mIsDownload = in.readByte() != 0;
         mIsOffline = in.readByte() != 0;
+        mFavorite = in.readByte() != 0;
     }
 
     @Override
@@ -46,6 +48,7 @@ public class Track implements Parcelable {
         parcel.writeString(mDownLoadUrl);
         parcel.writeByte((byte) (mIsDownload ? 1 : 0));
         parcel.writeByte((byte) (mIsOffline ? 1 : 0));
+        parcel.writeByte((byte) (mFavorite ? 1 : 0));
     }
 
     public static final Creator<Track> CREATOR = new Creator<Track>() {
@@ -146,6 +149,15 @@ public class Track implements Parcelable {
 
     public void setOffline(boolean offline) {
         mIsOffline = offline;
+    }
+
+
+    public boolean isFavorite() {
+        return mFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        mFavorite = favorite;
     }
 
     @Override
