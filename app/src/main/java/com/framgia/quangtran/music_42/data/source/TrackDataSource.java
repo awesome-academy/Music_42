@@ -1,7 +1,5 @@
 package com.framgia.quangtran.music_42.data.source;
 
-import android.content.ContentResolver;
-
 import com.framgia.quangtran.music_42.data.model.Track;
 
 import java.util.List;
@@ -14,7 +12,7 @@ public interface TrackDataSource {
     }
 
     interface Local {
-        void getOfflineTracks(ContentResolver contentResolver, DataCallback<Track> callback);
+        void getOfflineTracks(DataCallback<Track> callback);
     }
 
     interface Remote {

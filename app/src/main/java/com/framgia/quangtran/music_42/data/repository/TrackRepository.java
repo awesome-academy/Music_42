@@ -1,7 +1,5 @@
 package com.framgia.quangtran.music_42.data.repository;
 
-import android.content.ContentResolver;
-
 import com.framgia.quangtran.music_42.data.model.Track;
 import com.framgia.quangtran.music_42.data.source.TrackDataSource;
 
@@ -31,8 +29,7 @@ public class TrackRepository implements TrackDataSource.Local, TrackDataSource.R
     }
 
     @Override
-    public void getOfflineTracks(ContentResolver contentResolver,
-                                 TrackDataSource.DataCallback<Track> callback) {
-        mLocalDataSource.getOfflineTracks(contentResolver, callback);
+    public void getOfflineTracks(TrackDataSource.DataCallback<Track> callback) {
+        mLocalDataSource.getOfflineTracks(callback);
     }
 }

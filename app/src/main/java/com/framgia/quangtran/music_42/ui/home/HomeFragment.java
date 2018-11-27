@@ -1,7 +1,5 @@
 package com.framgia.quangtran.music_42.ui.home;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,24 +9,32 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.framgia.quangtran.music_42.R;
 import com.framgia.quangtran.music_42.data.model.Genre;
 import com.framgia.quangtran.music_42.data.model.Track;
+import com.framgia.quangtran.music_42.data.repository.GenreRepository;
+import com.framgia.quangtran.music_42.data.source.genre.GenreLocalDataSource;
+import com.framgia.quangtran.music_42.ui.DisableScrollLinearLayout;
 import com.framgia.quangtran.music_42.ui.genre.GenreActivity;
 import com.framgia.quangtran.music_42.ui.home.adapters.GenresAdapter;
 import com.framgia.quangtran.music_42.ui.home.adapters.TodayAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements GenresAdapter.GenreClickListener {
-    private static final String BUNDLE_GENRE = "genre";
-    private static List<Track> mTracks;
-    private HomePresenter mHomePresenter;
+public class HomeFragment extends Fragment implements GenresAdapter.GenreClickListener, HomeContract.View {
+    private static final String ARGUMENT_TRACKS = "ARGUMENT_TRACKS";
+    private List<Track> mTracks;
+    private HomeContract.Presenter mHomePresenter;
+    private View mView;
 
-    public static HomeFragment newInstance(List<Track> tracks) {
+    public static HomeFragment newInstance(ArrayList<Track> tracks) {
         HomeFragment homeFragment = new HomeFragment();
-        mTracks = tracks;
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(ARGUMENT_TRACKS, tracks);
+        homeFragment.setArguments(bundle);
         return homeFragment;
     }
 
@@ -36,46 +42,48 @@ public class HomeFragment extends Fragment implements GenresAdapter.GenreClickLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        mView = inflater.inflate(R.layout.fragment_home, container, false);
+        mTracks = getArguments().getParcelableArrayList(ARGUMENT_TRACKS);
+        initView();
         if (mTracks != null) {
-            initView(view, mTracks);
+            initRecyclerToday(mTracks);
         }
-        return view;
+        return mView;
     }
 
-    void initView(View view, List<Track> tracks) {
-        mHomePresenter = new HomePresenter();
-        RecyclerView mRecyclerToday = view.findViewById(R.id.recycler_recent);
-        mRecyclerToday.setLayoutManager(new LinearLayoutManager(getContext()) {
-            @Override
-            public boolean canScrollHorizontally() {
-                return false;
-            }
+    private void initView() {
+        GenreRepository repository = GenreRepository.getInstance(GenreLocalDataSource.getInstance());
+        mHomePresenter = new HomePresenter(repository, this);
+        mHomePresenter.getGenres();
+    }
 
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        });
+    private void initRecyclerToday(List<Track> tracks) {
+        RecyclerView mRecyclerToday = mView.findViewById(R.id.recycler_recent);
+        mRecyclerToday.setLayoutManager(new DisableScrollLinearLayout(getContext()));
         TodayAdapter todayAdapter = new TodayAdapter(tracks);
         mRecyclerToday.setAdapter(todayAdapter);
-        RecyclerView mRecyclerGenres = view.findViewById(R.id.recycler_genres);
+    }
+
+    private void initRecyclerGenre(List<Genre> genres) {
+        RecyclerView mRecyclerGenres = mView.findViewById(R.id.recycler_genres);
         mRecyclerGenres.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-        GenresAdapter genresAdapter = new GenresAdapter(this, mHomePresenter.getGenres());
+        GenresAdapter genresAdapter = new GenresAdapter(genres, this);
         mRecyclerGenres.setAdapter(genresAdapter);
     }
 
     @Override
     public void onItemClickGenre(Genre genre) {
-        startActivity(getGenreIntent(getActivity(), genre));
+        startActivity(GenreActivity.getGenreIntent(getActivity(), genre));
     }
 
-    public static Intent getGenreIntent(Context context, Genre genre) {
-        Intent intent = new Intent(context, GenreActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(BUNDLE_GENRE, genre);
-        intent.putExtra(BUNDLE_GENRE, genre);
-        return intent;
+    @Override
+    public void onSuccess(List<Genre> genres) {
+        initRecyclerGenre(genres);
+    }
+
+    @Override
+    public void onFailure(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

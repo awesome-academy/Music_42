@@ -1,10 +1,10 @@
-package com.framgia.quangtran.music_42.ui.splash;
+package com.framgia.quangtran.music_42.ui.personal;
 
 import com.framgia.quangtran.music_42.data.model.Track;
 
 import java.util.List;
 
-public interface SplashContract {
+public interface PersonalContract {
     interface View {
         void onSuccess(List<Track> tracks);
 
@@ -14,6 +14,6 @@ public interface SplashContract {
     interface Presenter {
         void setView(View view);
 
-        void loadOnlineMusic(String api);
+        void loadOfflineMusic();
     }
 }

@@ -31,11 +31,10 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     private static final int DELAY_MILLIS = 2000;
     private static final int OFFSET = 1;
     public static final int LIMIT = 8;
-    private static final String TRACKS = "tracks";
+    private static final String BUNDLE_TRACKS = "com.framgia.quangtran.music_42.ui.genre.BUNDLE_TRACKS";
     private String mApi;
     private Handler mHandler;
-    private ContentResolver mContentResolverCursor;
-    private SplashPresenter mSlashPresenter;
+    private SplashContract.Presenter mSlashPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +47,11 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     }
 
     void initUI() {
+        ContentResolver contentResolver = getApplicationContext().getContentResolver();
         TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
-                .getInstance(), TrackLocalDataSource.getInstance());
-        mContentResolverCursor = getApplicationContext().getContentResolver();
-        mSlashPresenter = new SplashPresenter(repository, this);
+                .getInstance(), TrackLocalDataSource.getInstance(contentResolver));
+        mSlashPresenter = new SplashPresenter(repository);
+        mSlashPresenter.setView(this);
     }
 
     private void checkPermission(String api) {
@@ -100,7 +100,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
 
     public static Intent getHomeIntent(Context context, List<Track> tracks) {
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(TRACKS, (ArrayList<? extends Parcelable>) tracks);
+        bundle.putParcelableArrayList(BUNDLE_TRACKS, (ArrayList<? extends Parcelable>) tracks);
         Intent HomeScreen = new Intent(context,
                 HomeActivity.class);
         HomeScreen.putExtras(bundle);
