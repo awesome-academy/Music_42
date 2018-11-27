@@ -1,4 +1,4 @@
-package com.framgia.quangtran.music_42.ui.homescreen.adapters;
+package com.framgia.quangtran.music_42.ui.home.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class TodayAdapter extends RecyclerView.Adapter<TodayAdapter.ViewHolder> {
     private List<Track> mTracks;
-    private LayoutInflater inflater;
+    private LayoutInflater mInflater;
 
     public TodayAdapter(List<Track> tracks) {
         this.mTracks = tracks;
@@ -26,10 +26,10 @@ public class TodayAdapter extends RecyclerView.Adapter<TodayAdapter.ViewHolder> 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        if (inflater == null) {
-            inflater = LayoutInflater.from(viewGroup.getContext());
+        if (mInflater == null) {
+            mInflater = LayoutInflater.from(viewGroup.getContext());
         }
-        View contactView = inflater.inflate(R.layout.item_recycler_music_home, viewGroup,
+        View contactView = mInflater.inflate(R.layout.item_recycler_music_home, viewGroup,
                 false);
         return new ViewHolder(contactView);
     }
@@ -57,6 +57,7 @@ public class TodayAdapter extends RecyclerView.Adapter<TodayAdapter.ViewHolder> 
         }
 
         public void bindData(Track track) {
+            if (track == null) return;
             mTextTrackName.setText(track.getTitle());
             mTextSingerName.setText(track.getUserName());
             RequestOptions requestOptions = new RequestOptions();
