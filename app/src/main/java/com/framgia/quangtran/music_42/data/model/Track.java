@@ -12,6 +12,7 @@ public class Track implements Parcelable {
     private String mDescription;
     private String mUserName;
     private int mDuration;
+    private String mStreamUrl;
     private String mDownLoadUrl;
     private boolean mIsDownload;
     private boolean mIsOffline;
@@ -29,6 +30,7 @@ public class Track implements Parcelable {
         mDescription = in.readString();
         mUserName = in.readString();
         mDuration = in.readInt();
+        mStreamUrl = in.readString();
         mDownLoadUrl = in.readString();
         mIsDownload = in.readByte() != 0;
         mIsOffline = in.readByte() != 0;
@@ -45,6 +47,7 @@ public class Track implements Parcelable {
         parcel.writeString(mDescription);
         parcel.writeString(mUserName);
         parcel.writeInt(mDuration);
+        parcel.writeString(mStreamUrl);
         parcel.writeString(mDownLoadUrl);
         parcel.writeByte((byte) (mIsDownload ? 1 : 0));
         parcel.writeByte((byte) (mIsOffline ? 1 : 0));
@@ -158,6 +161,14 @@ public class Track implements Parcelable {
 
     public void setFavorite(boolean favorite) {
         mFavorite = favorite;
+    }
+
+    public String getStreamUrl() {
+        return mStreamUrl;
+    }
+
+    public void setStreamUrl(String streamUrl) {
+        mStreamUrl = streamUrl;
     }
 
     @Override

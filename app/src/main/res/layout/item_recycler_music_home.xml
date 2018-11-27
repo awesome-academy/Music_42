@@ -16,7 +16,7 @@
 
     <TextView
         android:id="@+id/text_name_track"
-        android:layout_width="@dimen/dp_0"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_5"
         android:textSize="@dimen/sp_12"
@@ -30,7 +30,7 @@
 
     <TextView
         android:id="@+id/text_name_singer"
-        android:layout_width="@dimen/dp_0"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/text_name_track"
         android:textSize="@dimen/sp_10"

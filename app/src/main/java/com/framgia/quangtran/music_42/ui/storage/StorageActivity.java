@@ -72,7 +72,7 @@ public class StorageActivity extends AppCompatActivity
 
     @Override
     public void onSuccess(List<Track> data) {
-        if(data != null) {
+        if (data != null) {
             initRecycler(data);
         }
     }
