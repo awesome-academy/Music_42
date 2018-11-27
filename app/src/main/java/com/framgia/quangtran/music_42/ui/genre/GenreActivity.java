@@ -1,6 +1,8 @@
 package com.framgia.quangtran.music_42.ui.genre;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -21,11 +23,19 @@ import java.util.List;
 public class GenreActivity extends AppCompatActivity implements GenreContract.View {
     private static final int OFFSET = 1;
     public static final int LIMIT = 20;
-    private String mApi;
-    private static final String BUNDLE_GENRE = "genre";
+    private static final String BUNDLE_GENRE = "com.framgia.quangtran.music_42.ui.genre.BUNDLE_GENRE";
     private GenrePresenter mGenrePresenter;
     private ContentResolver mContentResolverCursor;
     private RecyclerView mRecyclerGenres;
+    private String mApi;
+
+    public static Intent getGenreIntent(Context context, Genre genre) {
+        Intent intent = new Intent(context, GenreActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(BUNDLE_GENRE, genre);
+        intent.putExtra(BUNDLE_GENRE, genre);
+        return intent;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,18 +45,20 @@ public class GenreActivity extends AppCompatActivity implements GenreContract.Vi
         loadMusic();
     }
 
-    void loadMusic() {
+
+    private void loadMusic() {
         Genre genre = getIntent().getParcelableExtra(BUNDLE_GENRE);
         mApi = StringUtil.genreApi(genre.getKey(), LIMIT, OFFSET);
-        mGenrePresenter.loadGenreMusic(mApi);
+        mGenrePresenter.getGenres(mApi);
     }
 
-    void initUI() {
+    private void initUI() {
         mRecyclerGenres = findViewById(R.id.recycler_genre);
         TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
                 .getInstance(), TrackLocalDataSource.getInstance());
         mContentResolverCursor = getApplicationContext().getContentResolver();
-        mGenrePresenter = new GenrePresenter(repository, this);
+        mGenrePresenter = new GenrePresenter(repository);
+        mGenrePresenter.setView(this);
         mRecyclerGenres.setLayoutManager(new LinearLayoutManager(this));
     }
 

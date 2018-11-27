@@ -10,9 +10,13 @@ public class SplashPresenter implements SplashContract.Presenter {
     private TrackRepository mRepository;
     private SplashContract.View mView;
 
-    public SplashPresenter(TrackRepository repository, SplashActivity view) {
+    public SplashPresenter(TrackRepository repository) {
         this.mRepository = repository;
-        this.mView = view;
+    }
+
+    @Override
+    public void setView(SplashContract.View view) {
+        mView = view;
     }
 
     @Override

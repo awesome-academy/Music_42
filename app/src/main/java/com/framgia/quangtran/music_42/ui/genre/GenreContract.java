@@ -12,6 +12,7 @@ public interface GenreContract {
     }
 
     interface Presenter{
-        void loadGenreMusic(String api);
+        void setView(View view);
+        void getGenres(String api);
     }
 }

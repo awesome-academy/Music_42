@@ -1,7 +1,5 @@
 package com.framgia.quangtran.music_42.ui.home;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,20 +13,26 @@ import android.view.ViewGroup;
 import com.framgia.quangtran.music_42.R;
 import com.framgia.quangtran.music_42.data.model.Genre;
 import com.framgia.quangtran.music_42.data.model.Track;
+import com.framgia.quangtran.music_42.data.repository.TrackRepository;
+import com.framgia.quangtran.music_42.data.source.local.TrackLocalDataSource;
+import com.framgia.quangtran.music_42.data.source.remote.TrackRemoteDataSource;
 import com.framgia.quangtran.music_42.ui.genre.GenreActivity;
 import com.framgia.quangtran.music_42.ui.home.adapters.GenresAdapter;
 import com.framgia.quangtran.music_42.ui.home.adapters.TodayAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements GenresAdapter.GenreClickListener {
-    private static final String BUNDLE_GENRE = "genre";
-    private static List<Track> mTracks;
-    private HomePresenter mHomePresenter;
+public class HomeFragment extends Fragment implements GenresAdapter.GenreClickListener,HomeContract.View {
+    private static final String ARGUMENT_TRACKS = "ARGUMENT_TRACKS";
+    private List<Track> mTracks;
+    private HomeContract.Presenter mHomePresenter;
 
-    public static HomeFragment newInstance(List<Track> tracks) {
+    public static HomeFragment newInstance(ArrayList<Track> tracks) {
         HomeFragment homeFragment = new HomeFragment();
-        mTracks = tracks;
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(ARGUMENT_TRACKS, tracks);
+        homeFragment.setArguments(bundle);
         return homeFragment;
     }
 
@@ -37,6 +41,7 @@ public class HomeFragment extends Fragment implements GenresAdapter.GenreClickLi
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        mTracks = getArguments().getParcelableArrayList(ARGUMENT_TRACKS);
         if (mTracks != null) {
             initView(view, mTracks);
         }
@@ -44,38 +49,22 @@ public class HomeFragment extends Fragment implements GenresAdapter.GenreClickLi
     }
 
     void initView(View view, List<Track> tracks) {
-        mHomePresenter = new HomePresenter();
+        TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
+                .getInstance(), TrackLocalDataSource.getInstance());
+        mHomePresenter = new HomePresenter(repository);
         RecyclerView mRecyclerToday = view.findViewById(R.id.recycler_recent);
-        mRecyclerToday.setLayoutManager(new LinearLayoutManager(getContext()) {
-            @Override
-            public boolean canScrollHorizontally() {
-                return false;
-            }
-
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        });
+        RecyclerView mRecyclerGenres = view.findViewById(R.id.recycler_genres);
+        mRecyclerToday.setLayoutManager(new LinearLayoutManager(getContext()));
         TodayAdapter todayAdapter = new TodayAdapter(tracks);
         mRecyclerToday.setAdapter(todayAdapter);
-        RecyclerView mRecyclerGenres = view.findViewById(R.id.recycler_genres);
         mRecyclerGenres.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-        GenresAdapter genresAdapter = new GenresAdapter(this, mHomePresenter.getGenres());
+        GenresAdapter genresAdapter = new GenresAdapter( mHomePresenter.getGenres(),this);
         mRecyclerGenres.setAdapter(genresAdapter);
     }
 
     @Override
     public void onItemClickGenre(Genre genre) {
-        startActivity(getGenreIntent(getActivity(), genre));
-    }
-
-    public static Intent getGenreIntent(Context context, Genre genre) {
-        Intent intent = new Intent(context, GenreActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(BUNDLE_GENRE, genre);
-        intent.putExtra(BUNDLE_GENRE, genre);
-        return intent;
+        startActivity(GenreActivity.getGenreIntent(getActivity(), genre));
     }
 }
