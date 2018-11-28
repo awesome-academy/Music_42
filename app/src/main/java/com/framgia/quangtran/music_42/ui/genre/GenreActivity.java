@@ -31,8 +31,6 @@ public class GenreActivity extends AppCompatActivity implements GenreContract.Vi
 
     public static Intent getGenreIntent(Context context, Genre genre) {
         Intent intent = new Intent(context, GenreActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(BUNDLE_GENRE, genre);
         intent.putExtra(BUNDLE_GENRE, genre);
         return intent;
     }
@@ -54,9 +52,9 @@ public class GenreActivity extends AppCompatActivity implements GenreContract.Vi
 
     private void initUI() {
         mRecyclerGenres = findViewById(R.id.recycler_genre);
-        TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
-                .getInstance(), TrackLocalDataSource.getInstance());
         mContentResolverCursor = getApplicationContext().getContentResolver();
+        TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
+                .getInstance(), TrackLocalDataSource.getInstance(mContentResolverCursor));
         mGenrePresenter = new GenrePresenter(repository);
         mGenrePresenter.setView(this);
         mRecyclerGenres.setLayoutManager(new LinearLayoutManager(this));

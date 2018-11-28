@@ -35,9 +35,9 @@ public class PersonalFragment extends Fragment implements PersonalContract.View 
     }
 
     private void initUI() {
-        TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
-                .getInstance(), TrackLocalDataSource.getInstance());
         mResolver = getActivity().getContentResolver();
+        TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
+                .getInstance(), TrackLocalDataSource.getInstance(mResolver));
         mPresenter = new PersonalPresenter(repository, mResolver);
         mPresenter.setView(this);
         mPresenter.loadOfflineMusic();

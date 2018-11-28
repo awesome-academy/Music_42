@@ -25,7 +25,7 @@ public class PersonalPresenter implements PersonalContract.Presenter {
 
     @Override
     public void loadOfflineMusic() {
-        mRepository.getOfflineTracks(mContentResolver, new TrackDataSource.DataCallback<Track>() {
+        mRepository.getOfflineTracks(new TrackDataSource.DataCallback<Track>() {
             @Override
             public void onSuccess(List<Track> data) {
                 mView.onSuccess(data);

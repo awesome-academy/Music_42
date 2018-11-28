@@ -1,6 +1,7 @@
 package com.framgia.quangtran.music_42.ui.splash;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -46,8 +47,9 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     }
 
     void initUI() {
+        ContentResolver contentResolver = getApplicationContext().getContentResolver();
         TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
-                .getInstance(), TrackLocalDataSource.getInstance());
+                .getInstance(), TrackLocalDataSource.getInstance(contentResolver));
         mSlashPresenter = new SplashPresenter(repository);
         mSlashPresenter.setView(this);
     }
