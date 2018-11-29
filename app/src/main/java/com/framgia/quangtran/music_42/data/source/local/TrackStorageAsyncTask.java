@@ -62,6 +62,8 @@ public class TrackStorageAsyncTask extends AsyncTask<Void, Void, List<Track>> {
                 String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media
                         .DATA));
                 Track track = new Track();
+                track.setTitle(title);
+                track.setUserName(artist);
                 track.setDownLoadUrl(path);
                 track.setArtWorkUrl(getAlbumArt(albumId));
                 track.setOffline(true);

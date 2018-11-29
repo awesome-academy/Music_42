@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment implements GenresAdapter.GenreClickLi
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_home, container, false);
-        mTracks = getArguments().getParcelableArrayList(ARGUMENT_TRACKS);
+        if (mTracks == null) mTracks = getArguments().getParcelableArrayList(ARGUMENT_TRACKS);
         initView();
         if (mTracks != null) {
             initRecyclerToday(mTracks);

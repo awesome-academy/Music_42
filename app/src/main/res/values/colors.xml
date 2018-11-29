@@ -3,7 +3,5 @@
     <color name="color_primary">#008577</color>
     <color name="color_primary_dark">#00574B</color>
     <color name="color_accent">#D81B60</color>
-    <color name="tab_color">#a2a2ef</color>
-    <color name="tab_select">#f40404</color>
     <color name="color_transparent">#33060606</color>
 </resources>

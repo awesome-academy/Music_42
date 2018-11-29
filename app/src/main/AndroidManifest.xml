@@ -21,6 +21,8 @@
         </activity>
         <activity android:name="com.framgia.quangtran.music_42.ui.home.HomeActivity" />
         <activity android:name="com.framgia.quangtran.music_42.ui.genre.GenreActivity" />
+        <activity android:name="com.framgia.quangtran.music_42.ui.storage.StorageActivity" />
+        <activity android:name="com.framgia.quangtran.music_42.ui.play.PlayActivity" />
     </application>
 
 </manifest>
