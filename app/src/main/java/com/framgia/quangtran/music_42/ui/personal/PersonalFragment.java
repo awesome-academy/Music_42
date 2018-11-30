@@ -64,9 +64,11 @@ public class PersonalFragment extends Fragment implements PersonalContract.View,
                 startActivity(StorageActivity.getStorageIntent(getContext(),
                         StorageStyle.StorageKey.DOWNLOAD));
                 break;
-            default:
+            case R.id.linear_favorite:
                 startActivity(StorageActivity.getStorageIntent(getContext(),
                         StorageStyle.StorageKey.FAVORITE));
+                break;
+            default:
                 break;
         }
     }
