@@ -24,7 +24,7 @@
         <activity android:name="com.framgia.quangtran.music_42.ui.storage.StorageActivity" />
         <activity android:name="com.framgia.quangtran.music_42.ui.play.PlayActivity" />
 
-        <service android:name=".service.MyService" />
+        <service android:name=".service.TracksITracksService" />
     </application>
 
 </manifest>
