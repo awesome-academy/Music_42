@@ -15,8 +15,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.framgia.quangtran.music_42.R;
-import com.framgia.quangtran.music_42.service.MyService;
-import com.framgia.quangtran.music_42.service.ServiceManager;
+import com.framgia.quangtran.music_42.service.TracksITracksService;
+import com.framgia.quangtran.music_42.service.TracksServiceManager;
 import com.framgia.quangtran.music_42.data.model.Track;
 import com.framgia.quangtran.music_42.util.TimeUtils;
 
@@ -37,7 +37,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private SeekBar mSeekBar;
     private TextView mCurrentTime;
     private TextView mTotalTime;
-    private MyService mService;
+    private TracksITracksService mService;
     private TimeUtils mTimeUtils;
     private android.os.Handler mHandler = new android.os.Handler();
 
@@ -73,7 +73,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MyService.LocalBinder binder = (MyService.LocalBinder) iBinder;
+            TracksITracksService.LocalBinder binder = (TracksITracksService.LocalBinder) iBinder;
             mService = binder.getService();
             startMusic();
         }
@@ -85,12 +85,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     };
 
     public void startService() {
-        Intent startService = new Intent(this, MyService.class);
-        ServiceManager serviceManager = new ServiceManager(this, startService,
+        Intent startService = new Intent(this, TracksITracksService.class);
+        TracksServiceManager tracksServiceManager = new TracksServiceManager(this, startService,
                 mConnection, Context.BIND_AUTO_CREATE);
-        serviceManager.bindService();
+        tracksServiceManager.bindService();
         startService(startService);
-        Intent serviceIntent = MyService.getMyServiceIntent(PlayActivity.this);
+        Intent serviceIntent = TracksITracksService.getMyServiceIntent(PlayActivity.this);
         if (mService == null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(serviceIntent);

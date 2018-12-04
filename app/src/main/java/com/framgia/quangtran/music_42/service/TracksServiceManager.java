@@ -4,19 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 
-public class ServiceManager {
-
+public class TracksServiceManager {
     private Context mContext;
     private Intent mIntent;
     private ServiceConnection mConnection;
     private int mFlags;
 
-    public ServiceManager(Context context, Intent intent) {
+    public TracksServiceManager(Context context, Intent intent) {
         mContext = context;
         mIntent = intent;
     }
 
-    public ServiceManager(Context context, Intent intent, ServiceConnection connection, int flags) {
+    public TracksServiceManager(Context context, Intent intent, ServiceConnection connection, int flags) {
         mContext = context;
         mIntent = intent;
         mConnection = connection;
