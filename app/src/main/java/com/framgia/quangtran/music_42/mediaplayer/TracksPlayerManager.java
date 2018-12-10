@@ -15,19 +15,20 @@ import com.framgia.quangtran.music_42.ui.UIPlayerListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class TracksPlayerManager extends TracksPlayerSetting implements ITracksPlayerManager
-        , MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnErrorListener {
+        , MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+    private static final int NUMBER_ONE = 1;
     private static final String ARTWORK_DEFAULT_SIZE = "large";
     private static final String ARTWORK_MAX_SIZE = "t500x500";
     private static final int POSITION_DEFAULT = 0;
     private static TracksPlayerManager sInstance;
-    private List<Track> mTracks;
-    private List<UIPlayerListener.ControlListener> mControlListeners;
     private Context mContext;
     private MediaPlayer mMediaPlayer;
-    private int mTrackCurrentPosition;
+    private List<Track> mTracks;
+    private List<UIPlayerListener.ControlListener> mControlListeners;
+    private int mTrackPosition;
     private int mState;
     private Exception mException;
 
@@ -41,6 +42,8 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
     private TracksPlayerManager(Context context) {
         super();
         mContext = context;
+        mLoopType = LoopType.NONE;
+        mShuffleType = ShuffleType.OFF;
         mControlListeners = new ArrayList<>();
     }
 
@@ -73,53 +76,76 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         start();
+        notifyStateChanged(getState());
     }
 
     @Override
     public void start() {
         setState(StatePlayerType.PLAYING);
         mMediaPlayer.start();
+        notifyStateChanged(getState());
     }
 
     @Override
     public void pause() {
         setState(StatePlayerType.PAUSE);
         mMediaPlayer.pause();
+        notifyStateChanged(getState());
     }
 
     @Override
     public void reset() {
         setState(StatePlayerType.IDLE);
         mMediaPlayer.reset();
+        notifyStateChanged(getState());
     }
 
     @Override
     public void release() {
         setState(StatePlayerType.RELEASE);
         mMediaPlayer.release();
+        notifyStateChanged(getState());
     }
 
     @Override
     public void stop() {
         setState(StatePlayerType.STOP);
         mMediaPlayer.stop();
+        notifyStateChanged(getState());
     }
 
     @Override
     public void next() {
-        if (mTrackCurrentPosition < mTracks.size() - 1) {
-            mTrackCurrentPosition++;
+        if (mTrackPosition == mTracks.size() - NUMBER_ONE && getShuffleType() == ShuffleType.OFF) {
+            mTrackPosition = 0;
+            setPositionTrack(mTrackPosition);
             initMediaPlayer();
-            initPlay(mTrackCurrentPosition);
+            initPlay(mTrackPosition);
+        } else if (mTrackPosition < mTracks.size() - NUMBER_ONE && getShuffleType() == ShuffleType.OFF) {
+            mTrackPosition++;
+            initMediaPlayer();
+            initPlay(mTrackPosition);
+        } else {
+            mTrackPosition = randomTrack();
+            initMediaPlayer();
+            initPlay(mTrackPosition);
         }
     }
 
     @Override
     public void previous() {
-        if (mTrackCurrentPosition > 0) {
-            mTrackCurrentPosition--;
+        if (mTrackPosition == 0 && getShuffleType() == ShuffleType.OFF) {
+            mTrackPosition = mTracks.size() - NUMBER_ONE;
             initMediaPlayer();
-            initPlay(mTrackCurrentPosition);
+            initPlay(mTrackPosition);
+        } else if (mTrackPosition > 0 && getShuffleType() == ShuffleType.OFF) {
+            mTrackPosition--;
+            initMediaPlayer();
+            initPlay(mTrackPosition);
+        } else {
+            mTrackPosition = randomTrack();
+            initMediaPlayer();
+            initPlay(mTrackPosition);
         }
     }
 
@@ -141,11 +167,6 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
     }
 
     @Override
-    public boolean getStatus() {
-        return mMediaPlayer.isPlaying();
-    }
-
-    @Override
     public int getDuration() {
         return mMediaPlayer.getDuration();
     }
@@ -157,6 +178,7 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
 
     private void setState(int state) {
         mState = state;
+        notifyStateChanged(state);
     }
 
     @Override
@@ -171,19 +193,16 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
 
     @Override
     public void setPositionTrack(int position) {
-        mTrackCurrentPosition = position;
+        mTrackPosition = position;
     }
 
     @Override
     public int getPositionTrack() {
-        return mTrackCurrentPosition;
+        return mTrackPosition;
     }
 
     @Override
     public void setTracks(List<Track> tracks) {
-        if (mTracks != null) {
-            mTracks.clear();
-        }
         mTracks = tracks;
     }
 
@@ -213,14 +232,18 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
     public void onCompletion(MediaPlayer mediaPlayer) {
         switch (getLoopType()) {
             case TracksPlayerSetting.LoopType.NONE:
-                next();
+                if (mTrackPosition == mTracks.size() - NUMBER_ONE) {
+                    pause();
+                } else {
+                    next();
+                }
                 break;
             case TracksPlayerSetting.LoopType.ONE:
                 initMediaPlayer();
                 initPlay(getPositionTrack());
                 break;
             case TracksPlayerSetting.LoopType.ALL:
-                if (getTracksSize() != 0 && getTracksSize() - 1
+                if (getTracksSize() != 0 && getTracksSize() - NUMBER_ONE
                         == getPositionTrack()) {
                     initMediaPlayer();
                     setPositionTrack(POSITION_DEFAULT);
@@ -235,6 +258,14 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
         return false;
+    }
+
+    public int getTracksSize() {
+        return mTracks.size();
+    }
+
+    public void addControlListener(UIPlayerListener.ControlListener controlListener) {
+        mControlListeners.add(controlListener);
     }
 
     private void setImageBackground(Track track, ImageView imageBackground) {
@@ -255,6 +286,12 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
         }
     }
 
+    private void notifyStateChanged(int state) {
+        for (UIPlayerListener.ControlListener controlListener : mControlListeners) {
+            controlListener.notifyStateChanged(getTrack(), state);
+        }
+    }
+
     private void notifySettingChanged() {
         for (UIPlayerListener.ControlListener controlListener : mControlListeners) {
             controlListener.notifyLoopChanged(getLoopType());
@@ -262,15 +299,11 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
         }
     }
 
-    public void addControlListener(UIPlayerListener.ControlListener controlListener) {
-        mControlListeners.add(controlListener);
-    }
-
-    public void removeControlListener(UIPlayerListener.ControlListener controlListener) {
-        mControlListeners.remove(controlListener);
-    }
-
-    public int getTracksSize() {
-        return mTracks.size();
+    private int randomTrack() {
+        int result = 0;
+        int maxSong = getTracks().size() - NUMBER_ONE;
+        Random r = new Random();
+        result = r.nextInt(maxSong);
+        return result;
     }
 }

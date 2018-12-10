@@ -3,7 +3,13 @@
     <color name="color_primary">#008577</color>
     <color name="color_primary_dark">#00574B</color>
     <color name="color_accent">#D81B60</color>
-    <color name="color_transparent">#33060606</color>
+    <color name="color_transparent">#CC060606</color>
     <color name="color_background">#d2cfcf</color>
     <color name="color_blue_gray">#b0bec5</color>
+    <color name="color_white">#FFF</color>
+    <color name="color_black">#f6000000</color>
+    <color name="black_transparent">#32000000</color>
+    <color name="white_transparent">#b5eeeeee</color>
+    <color name="status_bar">#ed5d30</color>
+    <color name="status_bar_transfer">#09ed5d30</color>
 </resources>
