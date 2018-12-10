@@ -44,13 +44,14 @@
                     android:layout_height="match_parent"
                     android:layout_marginRight="@dimen/dp_10"
                     android:cursorVisible="false"
-                    android:drawableLeft="@drawable/ic_search"
+                    android:drawableLeft="@drawable/ic_search_black_24dp"
                     android:drawablePadding="@dimen/dp_10"
                     android:hint="@string/title_search_music"
                     android:imeOptions="actionDone"
                     android:inputType="text"
                     android:textSize="@dimen/sp_15" />
             </android.support.v7.widget.Toolbar>
+
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

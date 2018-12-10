@@ -4,6 +4,7 @@ import com.framgia.quangtran.music_42.BuildConfig;
 import com.framgia.quangtran.music_42.data.model.GenreKey;
 
 public class StringUtil {
+    public static final int LIMIT = 10;
     public static final String CLIENT_ID = "&client_id=";
     public static final String BASE_URL_GENRES = "https://api-v2.soundcloud.com/charts?kind=top&genre=";
     public static final String BASE_URL_TRACK = "http://api.soundcloud.com/tracks";
@@ -33,5 +34,30 @@ public class StringUtil {
                 CLIENT_ID, BuildConfig.API_KEY,
                 PARAMETER_LIMIT, String.valueOf(limit),
                 PARAMETER_OFFSET, String.valueOf(offset));
+    }
+
+    public static String initStreamApi(long trackId) {
+        return StringUtil.append(BASE_URL_TRACK, SPLASH,
+                String.valueOf(trackId), SPLASH,
+                NAME_STREAM, QUESTION_MARK,
+                CLIENT_ID, BuildConfig.API_KEY);
+    }
+
+    public static String initDownloadApi(String url) {
+        return StringUtil.append(url, PARAMETER_ID, BuildConfig.API_KEY);
+    }
+
+    public static String initSearchApi(String keyword, int offset) {
+        return StringUtil.append(BASE_URL_TRACK,
+                PARAMETER_ID, BuildConfig.API_KEY,
+                PARAMETER_SEARCH, keyword,
+                PARAMETER_LIMIT, String.valueOf(LIMIT),
+                PARAMETER_OFFSET, String.valueOf(offset));
+    }
+
+    public static String initDetailApi(long trackId) {
+        return StringUtil.append(BASE_URL_TRACK, SPLASH,
+                String.valueOf(trackId), QUESTION_MARK,
+                CLIENT_ID, BuildConfig.API_KEY);
     }
 }
