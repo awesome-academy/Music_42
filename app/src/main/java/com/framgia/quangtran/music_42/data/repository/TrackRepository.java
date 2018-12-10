@@ -32,4 +32,24 @@ public class TrackRepository implements TrackDataSource.Local, TrackDataSource.R
     public void getOfflineTracks(TrackDataSource.DataCallback<Track> callback) {
         mLocalDataSource.getOfflineTracks(callback);
     }
+
+    @Override
+    public void searchTracks(String api, TrackDataSource.DataCallback<Track> callback) {
+        mRemoteDataSource.searchTracks(api, callback);
+    }
+
+    @Override
+    public void getFavoriteTracks(TrackDataSource.DataCallback<Track> callback) {
+        mLocalDataSource.getFavoriteTracks(callback);
+    }
+
+    @Override
+    public void addFavoriteTrack(Track track, TrackDataSource.DataCallback<Boolean> callback) {
+        mLocalDataSource.addFavoriteTrack(track, callback);
+    }
+
+    @Override
+    public void deleteFavoriteTrack(Track track, TrackDataSource.DataCallback<Boolean> callback) {
+        mLocalDataSource.deleteFavoriteTrack(track, callback);
+    }
 }

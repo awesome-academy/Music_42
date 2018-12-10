@@ -1,5 +1,7 @@
 package com.framgia.quangtran.music_42.data.source;
 
+import android.content.Context;
+
 import com.framgia.quangtran.music_42.data.model.Track;
 
 import java.util.List;
@@ -13,9 +15,17 @@ public interface TrackDataSource {
 
     interface Local {
         void getOfflineTracks(DataCallback<Track> callback);
+
+        void getFavoriteTracks(DataCallback<Track> callback);
+
+        void addFavoriteTrack(Track track, DataCallback<Boolean> callback);
+
+        void deleteFavoriteTrack(Track track, DataCallback<Boolean> callback);
     }
 
     interface Remote {
         void getOnlineTrack(String api, DataCallback<Track> callback);
+
+        void searchTracks(String api, DataCallback<Track> callback);
     }
 }
