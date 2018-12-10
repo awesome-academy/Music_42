@@ -19,7 +19,6 @@ import com.framgia.quangtran.music_42.data.source.remote.TrackRemoteDataSource;
 import com.framgia.quangtran.music_42.ui.play.PlayActivity;
 import com.framgia.quangtran.music_42.ui.storage.contract.StorageStyle;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class StorageActivity extends AppCompatActivity
@@ -85,6 +84,6 @@ public class StorageActivity extends AppCompatActivity
 
     @Override
     public void onClickPlayMusic(List<Track> tracks) {
-        startActivity(PlayActivity.getPlayIntent(this, (ArrayList<Track>) tracks));
+        startActivity(PlayActivity.getPlayIntent(this));
     }
 }

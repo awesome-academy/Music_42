@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Music_42</string>
+    <string name="app_name">IMusic</string>
     <string name="title_genres">#GENRES</string>
     <string name="title_hot_today">#Hot Today</string>
-    <string name="title_search_music">Search Music</string>
+    <string name="title_search_music">Search Music...</string>
     <string name="title_sound_cloud">SoundCloud</string>
     <string name="title_download">Download</string>
     <string name="title_local">Local</string>
@@ -10,4 +10,16 @@
     <string name="recent_music">Recent Music</string>
     <string name="default_time">00:00</string>
     <string name="default_name">default</string>
+    <string name="title_now_playing">now playing</string>
+    <string name="text_add_success">Add successfully</string>
+    <string name="text_add_favorite_fail">Exist track in favorites</string>
+    <string name="text_delete_favorite">Delete favorite track</string>
+    <string name="notify_download_complete">Download complete</string>
+    <string name="notify_downloading">Downloading...</string>
+    <string name="notify_begin_download">Begin downloading...</string>
+    <string name="error_download">Sorry, the song cant download now</string>
+    <string name="notify_file_exists">Song already exists</string>
+    <string name="notify_confirm_download">Do you want to continue download?</string>
+    <string name="confirm_yes">Yes</string>
+    <string name="confirm_no">No</string>
 </resources>

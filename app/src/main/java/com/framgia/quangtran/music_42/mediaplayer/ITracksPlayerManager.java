@@ -32,8 +32,6 @@ public interface ITracksPlayerManager {
 
     void seekTo(int msec);
 
-    boolean getStatus();
-
     int getDuration();
 
     int getState();

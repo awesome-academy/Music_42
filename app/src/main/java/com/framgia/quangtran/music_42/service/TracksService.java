@@ -26,7 +26,8 @@ import com.framgia.quangtran.music_42.ui.play.PlayActivity;
 
 import java.util.List;
 
-public class TracksITracksService extends Service implements ITracksService {
+public class TracksService extends Service implements
+        ITracksService, UIPlayerListener.ControlListener {
     private static final int REQUEST_CODE = 1000;
     private static final int NOTIFICATION_ID = 1;
     private static final String ACTION_PREVIOUS = "ACTION_PREVIOUS";
@@ -43,6 +44,24 @@ public class TracksITracksService extends Service implements ITracksService {
     private Intent mIntentNotification;
     private Intent mIntentRemoteView;
     private PendingIntent mPendingIntentNotification;
+    private Boolean mStateMiniPlayer;
+
+    public class LocalBinder extends Binder {
+        public TracksService getService() {
+            return TracksService.this;
+        }
+    }
+
+    public static Intent getMyServiceIntent(Context context) {
+        Intent intent = new Intent(context, TracksService.class);
+        return intent;
+    }
+
+    public class TrackBinder extends Binder {
+        public TracksService getService() {
+            return TracksService.this;
+        }
+    }
 
     @Nullable
     @Override
@@ -50,22 +69,19 @@ public class TracksITracksService extends Service implements ITracksService {
         return mIBinder;
     }
 
-    public class TrackBinder extends Binder {
-        public TracksITracksService getService() {
-            return TracksITracksService.this;
-        }
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         mMediaPlayerManager = TracksPlayerManager.getInstance(this);
         mMediaPlayerManager.initMediaPlayer();
+        mStateMiniPlayer = false;
         initNotification();
+        addControlListener(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        handleIntent(intent);
         return START_STICKY;
     }
 
@@ -153,7 +169,8 @@ public class TracksITracksService extends Service implements ITracksService {
     }
 
     @Override
-    public void setPlayTrackInfo(TextView title, TextView artist, ImageView imageBackGround, ImageView imageArtwork) {
+    public void setPlayTrackInfo(TextView title, TextView artist,
+                                 ImageView imageBackGround, ImageView imageArtwork) {
         mMediaPlayerManager.setPlayTrackInfo(title, artist, imageBackGround, imageArtwork);
     }
 
@@ -167,15 +184,26 @@ public class TracksITracksService extends Service implements ITracksService {
         super.onDestroy();
     }
 
-    public class LocalBinder extends Binder {
-        public TracksITracksService getService() {
-            return TracksITracksService.this;
-        }
+    @Override
+    public void notifyShuffleChanged(int shuffleType) {
     }
 
-    public static Intent getMyServiceIntent(Context context) {
-        Intent intent = new Intent(context, TracksITracksService.class);
-        return intent;
+    @Override
+    public void notifyLoopChanged(int loopType) {
+    }
+
+    @Override
+    public void notifyStateChanged(Track track, int stateType) {
+        switch (stateType) {
+            case ITracksPlayerManager.StatePlayerType.PAUSE:
+                updateDescriptionNotification(track);
+                break;
+            case ITracksPlayerManager.StatePlayerType.PLAYING:
+                updateDescriptionNotification(track);
+                break;
+            default:
+                break;
+        }
     }
 
     public void play(int position) {
@@ -185,23 +213,26 @@ public class TracksITracksService extends Service implements ITracksService {
         createNotification();
     }
 
+    public void setStateMiniPlayer(boolean state) {
+        mStateMiniPlayer = state;
+    }
+
+    public boolean getStateMiniPlayer() {
+        return mStateMiniPlayer;
+    }
+
     public void addControlListener(UIPlayerListener.ControlListener controlListener) {
         mMediaPlayerManager.addControlListener(controlListener);
     }
 
-    public void removeControlListener(UIPlayerListener.ControlListener controlListener) {
-        mMediaPlayerManager.removeControlListener(controlListener);
-    }
-
     private void initNotification() {
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mIntentRemoteView = new Intent(this, TracksITracksService.class);
+        mIntentRemoteView = new Intent(this, TracksService.class);
         mIntentNotification = new Intent(this, PlayActivity.class);
         mIntentNotification.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         mPendingIntentNotification = PendingIntent.getActivity(this, REQUEST_CODE,
                 mIntentNotification, PendingIntent.FLAG_UPDATE_CURRENT);
-        mRemoteViews = new RemoteViews(getPackageName(), R.layout.layout_notification);
     }
 
     private void createNotification() {
@@ -232,12 +263,15 @@ public class TracksITracksService extends Service implements ITracksService {
         intent.setAction(ACTION_NEXT);
         PendingIntent nextPendingIntent = PendingIntent.getService(this, REQUEST_CODE,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        mRemoteViews.setOnClickPendingIntent(R.id.button_next, nextPendingIntent);
+        mRemoteViews.setOnClickPendingIntent(R.id.image_next, nextPendingIntent);
     }
 
     private Notification buildNotification() {
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentIntent(mPendingIntentNotification)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                // Apply the media style template
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setSmallIcon(R.drawable.soundcloud)
                 .setContent(mRemoteViews)
                 .build();
@@ -253,6 +287,37 @@ public class TracksITracksService extends Service implements ITracksService {
                 .asBitmap()
                 .load(track.getArtWorkUrl())
                 .into(mNotificationTarget);
+        mRemoteViews.setTextViewText(R.id.text_song_name, mMediaPlayerManager.getTrack().getTitle());
         startForeground(NOTIFICATION_ID, mNotificationUI);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent == null || intent.getAction() == null) {
+            return;
+        }
+        switch (intent.getAction()) {
+            case ACTION_PREVIOUS:
+                previous();
+                break;
+            case ACTION_PLAY:
+                changePlayPauseStatus();
+                break;
+            case ACTION_PAUSE:
+                changePlayPauseStatus();
+                break;
+            case ACTION_NEXT:
+                next();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void changePlayPauseStatus() {
+        if (getStateMedia() == ITracksPlayerManager.StatePlayerType.PAUSE) {
+            start();
+        } else {
+            pause();
+        }
     }
 }

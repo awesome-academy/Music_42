@@ -1,5 +1,6 @@
 package com.framgia.quangtran.music_42.ui;
 
+import com.framgia.quangtran.music_42.data.model.Track;
 import com.framgia.quangtran.music_42.mediaplayer.ITracksPlayerManager;
 import com.framgia.quangtran.music_42.mediaplayer.TracksPlayerSetting;
 
@@ -10,6 +11,6 @@ public interface UIPlayerListener {
 
         void notifyLoopChanged(@TracksPlayerSetting.LoopType int loopType);
 
-        void notifyStateChanged(@ITracksPlayerManager.StatePlayerType int statusType);
+        void notifyStateChanged(Track track, @ITracksPlayerManager.StatePlayerType int statusType);
     }
 }

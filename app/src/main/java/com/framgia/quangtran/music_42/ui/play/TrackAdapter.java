@@ -63,7 +63,6 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
             super(itemView);
             mClickTrackElement = clickTrackElement;
             mTracks = tracks;
-            mLayout = itemView.findViewById(R.id.constraint_track);
             mTextTrackName = itemView.findViewById(R.id.text_name_track);
             mTextSingerName = itemView.findViewById(R.id.text_name_singer);
             mImageTrack = itemView.findViewById(R.id.image_track);
