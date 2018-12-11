@@ -34,4 +34,42 @@ public class GenrePresenter implements GenreContract.Presenter {
             }
         });
     }
+
+    @Override
+    public void getTracks(String api) {
+        mRepository.getOnlineTrack(api, new TrackDataSource.DataCallback<Track>() {
+            @Override
+            public void onSuccess(List<Track> tracks) {
+                mView.onSuccess(tracks);
+            }
+
+            @Override
+            public void onFailed(String message) {
+                mView.onFailure(message);
+            }
+        });
+    }
+
+    @Override
+    public void addFavoriteTrack(Track track) {
+        mRepository.addFavoriteTrack(track, new TrackDataSource.DataCallback<Boolean>() {
+            @Override
+            public void onSuccess(List<Boolean> datas) {
+                boolean isSuccess = datas.get(0);
+                if (isSuccess) {
+                    mView.addFavoriteTrackSuccess();
+                    return;
+                }
+            }
+
+            @Override
+            public void onFailed(String message) {
+                mView.onFailure(message);
+            }
+        });
+    }
+
+    @Override
+    public void deleteFavoriteTrack(Track track) {
+    }
 }
