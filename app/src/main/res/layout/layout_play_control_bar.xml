@@ -2,13 +2,15 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_to_white">
 
     <TextView
         android:id="@+id/text_current_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_5"
+        android:layout_marginTop="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_15"
         android:text="@string/default_time"
         android:textColor="@color/color_primary_dark"
@@ -18,10 +20,11 @@
 
     <SeekBar
         android:id="@+id/seek_bar_track"
-        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        style="@style/ThemeOverlay.AppCompat.Dark"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_10"
         app:layout_constraintBottom_toBottomOf="@id/text_current_time"
         app:layout_constraintLeft_toRightOf="@id/text_current_time"
@@ -32,6 +35,7 @@
         android:id="@+id/text_total_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_5"
         android:text="@string/default_time"
         android:textColor="@color/color_primary_dark"
@@ -43,17 +47,17 @@
     <View
         android:id="@+id/view_control_bar"
         android:layout_width="0dp"
-        android:layout_height="@dimen/dp_100"
-        android:background="@drawable/gradient_to_white"
+        android:layout_height="@dimen/dp_80"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
     <ImageView
         android:id="@+id/image_shuffle"
-        android:layout_width="@dimen/dp_30"
-        android:layout_height="@dimen/dp_30"
-        android:src="@drawable/ic_suffle_option"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
+        android:clickable="true"
+        android:src="@drawable/ic_shuffle"
         app:layout_constraintBottom_toBottomOf="@id/view_control_bar"
         app:layout_constraintLeft_toLeftOf="@id/view_control_bar"
         app:layout_constraintRight_toLeftOf="@id/image_previous"
@@ -64,7 +68,8 @@
         android:id="@+id/image_previous"
         android:layout_width="@dimen/dp_30"
         android:layout_height="@dimen/dp_30"
-        android:src="@drawable/ic_back"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_skip_previous_black_24dp"
         app:layout_constraintBottom_toBottomOf="@id/image_shuffle"
         app:layout_constraintLeft_toRightOf="@id/image_shuffle"
         app:layout_constraintRight_toLeftOf="@id/image_play"
@@ -74,7 +79,7 @@
         android:id="@+id/image_play"
         android:layout_width="@dimen/dp_40"
         android:layout_height="@dimen/dp_40"
-        android:src="@drawable/ic_play_button"
+        android:src="@drawable/ic_pause"
         app:layout_constraintBottom_toBottomOf="@id/image_previous"
         app:layout_constraintLeft_toRightOf="@id/image_previous"
         app:layout_constraintRight_toLeftOf="@id/image_next"
@@ -96,7 +101,8 @@
         android:id="@+id/image_next"
         android:layout_width="@dimen/dp_30"
         android:layout_height="@dimen/dp_30"
-        android:src="@drawable/ic_next"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_skip_next_black_24dp"
         app:layout_constraintBottom_toBottomOf="@id/image_play"
         app:layout_constraintLeft_toRightOf="@id/image_play"
         app:layout_constraintRight_toLeftOf="@id/image_loop"
@@ -104,9 +110,9 @@
 
     <ImageView
         android:id="@+id/image_loop"
-        android:layout_width="@dimen/dp_30"
-        android:layout_height="@dimen/dp_30"
-        android:src="@drawable/loop"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
+        android:src="@drawable/loop_none"
         app:layout_constraintBottom_toBottomOf="@id/image_next"
         app:layout_constraintLeft_toRightOf="@id/image_next"
         app:layout_constraintRight_toRightOf="parent"
