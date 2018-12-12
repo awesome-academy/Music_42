@@ -74,6 +74,8 @@ public class GenresAdapter extends RecyclerView.Adapter<GenresAdapter.ViewHolder
                 case R.id.constraint_genre:
                     mGenreClickListener.onItemClickGenre(mGenre);
                     break;
+                default:
+                    break;
             }
         }
     }

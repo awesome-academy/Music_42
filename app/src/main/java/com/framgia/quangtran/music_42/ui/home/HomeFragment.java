@@ -24,13 +24,17 @@ import com.framgia.quangtran.music_42.ui.home.adapters.TodayAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements GenresAdapter.GenreClickListener, HomeContract.View {
+public class HomeFragment extends Fragment
+        implements GenresAdapter.GenreClickListener, HomeContract.View {
     private static final String ARGUMENT_TRACKS = "ARGUMENT_TRACKS";
     private List<Track> mTracks;
     private HomeContract.Presenter mHomePresenter;
     private View mView;
+    private static TodayAdapter.ClickTrackElement sClickTrackElement;
 
-    public static HomeFragment newInstance(ArrayList<Track> tracks) {
+    public static HomeFragment newInstance(ArrayList<Track> tracks,
+                                           TodayAdapter.ClickTrackElement clickTrackElement) {
+        sClickTrackElement = clickTrackElement;
         HomeFragment homeFragment = new HomeFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(ARGUMENT_TRACKS, tracks);
@@ -60,7 +64,7 @@ public class HomeFragment extends Fragment implements GenresAdapter.GenreClickLi
     private void initRecyclerToday(List<Track> tracks) {
         RecyclerView mRecyclerToday = mView.findViewById(R.id.recycler_recent);
         mRecyclerToday.setLayoutManager(new DisableScrollLinearLayout(getContext()));
-        TodayAdapter todayAdapter = new TodayAdapter(tracks);
+        TodayAdapter todayAdapter = new TodayAdapter(tracks, sClickTrackElement);
         mRecyclerToday.setAdapter(todayAdapter);
     }
 
