@@ -186,22 +186,24 @@ public class TracksService extends Service implements
 
     @Override
     public void notifyShuffleChanged(int shuffleType) {
+
     }
 
     @Override
     public void notifyLoopChanged(int loopType) {
+
     }
 
     @Override
     public void notifyStateChanged(Track track, int stateType) {
         switch (stateType) {
             case ITracksPlayerManager.StatePlayerType.PAUSE:
+                updatePlayNotification();
                 updateDescriptionNotification(track);
                 break;
             case ITracksPlayerManager.StatePlayerType.PLAYING:
+                updatePauseNotification();
                 updateDescriptionNotification(track);
-                break;
-            default:
                 break;
         }
     }
@@ -233,6 +235,7 @@ public class TracksService extends Service implements
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         mPendingIntentNotification = PendingIntent.getActivity(this, REQUEST_CODE,
                 mIntentNotification, PendingIntent.FLAG_UPDATE_CURRENT);
+        mRemoteViews = new RemoteViews(getPackageName(), R.layout.layout_notification);
     }
 
     private void createNotification() {
@@ -282,6 +285,27 @@ public class TracksService extends Service implements
                 NOTIFICATION_ID);
     }
 
+    private void updatePauseNotification() {
+        mIntentRemoteView.setAction(ACTION_PAUSE);
+        PendingIntent pendingIntent = PendingIntent.getService(this, REQUEST_CODE,
+                mIntentRemoteView, PendingIntent.FLAG_UPDATE_CURRENT);
+        mRemoteViews.setImageViewResource(R.id.image_play, R.drawable.ic_pause);
+        mRemoteViews.setOnClickPendingIntent(R.id.image_play, pendingIntent);
+        mNotificationManager.notify(NOTIFICATION_ID, mNotificationUI);
+        startForeground(NOTIFICATION_ID, mNotificationUI);
+    }
+
+    private void updatePlayNotification() {
+        mIntentRemoteView.setAction(ACTION_PLAY);
+        PendingIntent pendingIntent = PendingIntent.getService(this, REQUEST_CODE,
+                mIntentRemoteView, PendingIntent.FLAG_UPDATE_CURRENT);
+        mRemoteViews.setImageViewResource(R.id.image_play,
+                R.drawable.ic_play_button);
+        mRemoteViews.setOnClickPendingIntent(R.id.image_play, pendingIntent);
+        mNotificationManager.notify(NOTIFICATION_ID, mNotificationUI);
+        startForeground(NOTIFICATION_ID, mNotificationUI);
+    }
+
     private void updateDescriptionNotification(Track track) {
         Glide.with(this)
                 .asBitmap()
@@ -300,20 +324,18 @@ public class TracksService extends Service implements
                 previous();
                 break;
             case ACTION_PLAY:
-                changePlayPauseStatus();
+                changePlayPauseState();
                 break;
             case ACTION_PAUSE:
-                changePlayPauseStatus();
+                changePlayPauseState();
                 break;
             case ACTION_NEXT:
                 next();
                 break;
-            default:
-                break;
         }
     }
 
-    public void changePlayPauseStatus() {
+    public void changePlayPauseState() {
         if (getStateMedia() == ITracksPlayerManager.StatePlayerType.PAUSE) {
             start();
         } else {

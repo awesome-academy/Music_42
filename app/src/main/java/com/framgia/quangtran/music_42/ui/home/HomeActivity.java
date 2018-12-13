@@ -30,6 +30,7 @@ import com.framgia.quangtran.music_42.ui.home.adapters.TodayAdapter;
 import com.framgia.quangtran.music_42.ui.home.adapters.ViewPagerAdapter;
 import com.framgia.quangtran.music_42.ui.play.PlayActivity;
 import com.framgia.quangtran.music_42.ui.search.SearchActivity;
+import com.framgia.quangtran.music_42.util.MarginUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,8 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity implements ServiceConnection,
         TodayAdapter.ClickTrackElement, UIPlayerListener.ControlListener, View.OnClickListener {
     private static final String BUNDLE_TRACKS = "com.framgia.quangtran.music_42.ui.genre.BUNDLE_TRACKS";
+    private static final int MARGIN_DEFAULT = 0;
+    private static final int MARGIN_BOTTOM = 90;
     private int mTrackPosition;
     private ViewPager mViewPagerMusic;
     private TabLayout mTabLayout;
@@ -162,6 +165,13 @@ public class HomeActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onStart() {
         super.onStart();
+        if (mService != null) {
+            if (mService.getStateMiniPlayer()) {
+                mMiniPlayer.setVisibility(View.VISIBLE);
+                MarginUtil.getInstance().setMargins(mViewPagerMusic, MARGIN_DEFAULT,
+                        MARGIN_DEFAULT, MARGIN_DEFAULT, MARGIN_BOTTOM);
+            }
+        }
     }
 
     private void initUI() {

@@ -11,6 +11,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.framgia.quangtran.music_42.R;
 import com.framgia.quangtran.music_42.data.model.Track;
 import com.framgia.quangtran.music_42.ui.UIPlayerListener;
+import com.framgia.quangtran.music_42.util.MySharedPreferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,6 +84,9 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
     public void start() {
         setState(StatePlayerType.PLAYING);
         mMediaPlayer.start();
+        if (!getTrack().isOffline()) {
+            saveRecentTrack();
+        }
         notifyStateChanged(getState());
     }
 
@@ -147,6 +151,7 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
             initMediaPlayer();
             initPlay(mTrackPosition);
         }
+
     }
 
     @Override
@@ -303,7 +308,13 @@ public class TracksPlayerManager extends TracksPlayerSetting implements ITracksP
         int result = 0;
         int maxSong = getTracks().size() - NUMBER_ONE;
         Random r = new Random();
-        result = r.nextInt(maxSong);
+        result = r.nextInt(maxSong - NUMBER_ONE);
         return result;
+    }
+
+    private void saveRecentTrack() {
+        long idTrack = mTracks.get(getPositionTrack()).getId();
+        MySharedPreferences sharedPreferences = new MySharedPreferences(mContext);
+        sharedPreferences.addData(idTrack);
     }
 }
