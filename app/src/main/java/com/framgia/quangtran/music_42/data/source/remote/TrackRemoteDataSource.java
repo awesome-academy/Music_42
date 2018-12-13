@@ -25,4 +25,8 @@ public class TrackRemoteDataSource implements TrackDataSource.Remote {
     public void searchTracks(String api, TrackDataSource.DataCallback<Track> callback) {
         new SearchAsyncTask(callback).execute(api);
     }
+
+    public void getDetailTrack(String api, TrackDataSource.DataCallback<Track> callback) {
+        new LoadTrackDetailTask(callback).execute(api);
+    }
 }

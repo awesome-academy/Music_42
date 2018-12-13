@@ -5,13 +5,16 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.framgia.quangtran.music_42.R;
@@ -23,7 +26,6 @@ import com.framgia.quangtran.music_42.data.source.remote.TrackRemoteDataSource;
 import com.framgia.quangtran.music_42.ui.home.HomeActivity;
 import com.framgia.quangtran.music_42.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SplashActivity extends AppCompatActivity implements SplashContract.View {
@@ -31,7 +33,6 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     private static final int DELAY_MILLIS = 2000;
     private static final int OFFSET = 1;
     public static final int LIMIT = 8;
-    private static final String BUNDLE_TRACKS = "com.framgia.quangtran.music_42.ui.genre.BUNDLE_TRACKS";
     private String mApi;
     private Handler mHandler;
     private SplashContract.Presenter mSlashPresenter;
@@ -46,10 +47,21 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         checkPermission(mApi);
     }
 
-    void initUI() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    private void initUI() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.status_bar));
+        }
         ContentResolver contentResolver = getApplicationContext().getContentResolver();
         TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
-                .getInstance(), TrackLocalDataSource.getInstance(getApplicationContext(), contentResolver));
+                .getInstance(), TrackLocalDataSource.getInstance(getApplicationContext(),contentResolver));
         mSlashPresenter = new SplashPresenter(repository);
         mSlashPresenter.setView(this);
     }
@@ -63,7 +75,12 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
                     , READ_EXTERNAL_STORAGE);
             return;
         }
-        mSlashPresenter.loadOnlineMusic(api);
+        if (isNetworkConnected()) {
+            mSlashPresenter.loadOnlineMusic(api);
+        } else {
+            DelayLoadData();
+            return;
+        }
     }
 
     public void DelayLoadData() {
@@ -86,29 +103,36 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
         if (requestCode == READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager
                     .PERMISSION_DENIED) {
-                mSlashPresenter.loadOnlineMusic(mApi);
-                return;
             }
         }
-        mSlashPresenter.loadOnlineMusic(mApi);
+        if (isNetworkConnected()) {
+            mSlashPresenter.loadOnlineMusic(mApi);
+        }
+        else {
+            DelayLoadData();
+        }
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager.getActiveNetworkInfo() == null ? false : true;
     }
 
     @Override
     public void onSuccess(List<Track> tracks) {
-        startActivity(getHomeIntent(SplashActivity.this, tracks));
+        startActivity(HomeActivity.getHomeIntent(SplashActivity.this, tracks));
+        finish();
     }
 
-    public static Intent getHomeIntent(Context context, List<Track> tracks) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(BUNDLE_TRACKS, (ArrayList<? extends Parcelable>) tracks);
-        Intent HomeScreen = new Intent(context,
-                HomeActivity.class);
-        HomeScreen.putExtras(bundle);
-        return HomeScreen;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
     public void onFailure(String message) {
+        DelayLoadData();
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

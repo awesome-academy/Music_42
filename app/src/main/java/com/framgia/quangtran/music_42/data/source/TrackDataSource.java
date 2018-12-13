@@ -21,11 +21,15 @@ public interface TrackDataSource {
         void addFavoriteTrack(Track track, DataCallback<Boolean> callback);
 
         void deleteFavoriteTrack(Track track, DataCallback<Boolean> callback);
+
+        void getRecentTrack(Context context, TrackDataSource.DataCallback<Long> callback);
     }
 
     interface Remote {
         void getOnlineTrack(String api, DataCallback<Track> callback);
 
         void searchTracks(String api, DataCallback<Track> callback);
+
+        void getDetailTrack(String api, TrackDataSource.DataCallback<Track> callback);
     }
 }

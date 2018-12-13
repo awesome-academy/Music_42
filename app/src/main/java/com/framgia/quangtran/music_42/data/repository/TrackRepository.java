@@ -1,5 +1,7 @@
 package com.framgia.quangtran.music_42.data.repository;
 
+import android.content.Context;
+
 import com.framgia.quangtran.music_42.data.model.Track;
 import com.framgia.quangtran.music_42.data.source.TrackDataSource;
 
@@ -29,13 +31,13 @@ public class TrackRepository implements TrackDataSource.Local, TrackDataSource.R
     }
 
     @Override
-    public void getOfflineTracks(TrackDataSource.DataCallback<Track> callback) {
-        mLocalDataSource.getOfflineTracks(callback);
+    public void searchTracks(String api, TrackDataSource.DataCallback<Track> callback) {
+        mRemoteDataSource.searchTracks(api, callback);
     }
 
     @Override
-    public void searchTracks(String api, TrackDataSource.DataCallback<Track> callback) {
-        mRemoteDataSource.searchTracks(api, callback);
+    public void getOfflineTracks(TrackDataSource.DataCallback<Track> callback) {
+        mLocalDataSource.getOfflineTracks(callback);
     }
 
     @Override
@@ -51,5 +53,15 @@ public class TrackRepository implements TrackDataSource.Local, TrackDataSource.R
     @Override
     public void deleteFavoriteTrack(Track track, TrackDataSource.DataCallback<Boolean> callback) {
         mLocalDataSource.deleteFavoriteTrack(track, callback);
+    }
+
+    @Override
+    public void getRecentTrack(Context context, TrackDataSource.DataCallback<Long> callback) {
+        mLocalDataSource.getRecentTrack(context,callback);
+    }
+
+    @Override
+    public void getDetailTrack(String api, TrackDataSource.DataCallback<Track> callback) {
+        mRemoteDataSource.getDetailTrack(api,callback);
     }
 }
