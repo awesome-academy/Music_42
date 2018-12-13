@@ -3,6 +3,7 @@ package com.framgia.quangtran.music_42.ui.play;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -32,12 +34,15 @@ import com.framgia.quangtran.music_42.data.source.local.TrackLocalDataSource;
 import com.framgia.quangtran.music_42.data.source.remote.TrackRemoteDataSource;
 import com.framgia.quangtran.music_42.mediaplayer.ITracksPlayerManager;
 import com.framgia.quangtran.music_42.mediaplayer.TracksPlayerSetting;
+import com.framgia.quangtran.music_42.service.DownloadService;
 import com.framgia.quangtran.music_42.service.TracksService;
 import com.framgia.quangtran.music_42.service.TracksServiceManager;
 import com.framgia.quangtran.music_42.ui.SimpleItemTouchHelperCallback;
 import com.framgia.quangtran.music_42.ui.UIPlayerListener;
+import com.framgia.quangtran.music_42.util.StringUtil;
 import com.framgia.quangtran.music_42.util.TimeUtils;
 
+import java.io.File;
 import java.util.List;
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener,
@@ -402,6 +407,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setButtonDownload() {
+        checkPermission();
+        if (mHasPermission && mService.getTrack().isDownload()) {
+            beginDownload();
+            Toast.makeText(this, R.string.notify_begin_download,
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.error_download,
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void checkPermission() {
@@ -411,6 +425,30 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, REQUEST_PERMISSION);
         } else mHasPermission = true;
+    }
+
+    private boolean isAcceptDownload(String title) {
+        String fileName = StringUtil.append(ROOT_FOLDER, title, MP3_FORMAT);
+        File file = new File(fileName);
+        if (!file.isDirectory() && file.exists()) return confirmDownload();
+        return true;
+    }
+
+    private boolean confirmDownload() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.notify_file_exists)
+                .setMessage(R.string.notify_confirm_download)
+                .setIcon(R.drawable.ic_download_false)
+                .setPositiveButton(R.string.confirm_yes, (DialogInterface.OnClickListener) this)
+                .setNegativeButton(R.string.confirm_no, (DialogInterface.OnClickListener) this)
+                .create();
+        dialog.show();
+        return false;
+    }
+
+    private void beginDownload() {
+        Intent intent = DownloadService.getDownloadIntent(this, mService.getTrack());
+        startService(intent);
     }
 
     private void initNavigation() {
