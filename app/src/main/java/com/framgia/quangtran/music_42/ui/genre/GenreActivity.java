@@ -1,15 +1,22 @@
 package com.framgia.quangtran.music_42.ui.genre;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -27,6 +34,7 @@ import com.framgia.quangtran.music_42.data.repository.TrackRepository;
 import com.framgia.quangtran.music_42.data.source.local.TrackLocalDataSource;
 import com.framgia.quangtran.music_42.data.source.remote.TrackRemoteDataSource;
 import com.framgia.quangtran.music_42.mediaplayer.ITracksPlayerManager;
+import com.framgia.quangtran.music_42.service.DownloadService;
 import com.framgia.quangtran.music_42.service.TracksService;
 import com.framgia.quangtran.music_42.service.TracksServiceManager;
 import com.framgia.quangtran.music_42.ui.LoadMoreAbstract;
@@ -35,6 +43,7 @@ import com.framgia.quangtran.music_42.ui.play.PlayActivity;
 import com.framgia.quangtran.music_42.ui.search.SearchActivity;
 import com.framgia.quangtran.music_42.util.StringUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +74,10 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
     private Button mButtonNextSong;
     private Button mButtonPreviousSong;
     private Button mButtonPlaySong;
+    private boolean mHasPermission;
+    private static final int REQUEST_PERMISSION = 10;
+    private static final String ROOT_FOLDER = "storage/emulated/0/download/";
+    private static final String MP3_FORMAT = ".mp3";
 
     public static Intent getGenreIntent(Context context, Genre genre) {
         Intent intent = new Intent(context, GenreActivity.class);
@@ -114,6 +127,7 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
             mSwipeRefreshLayout.setRefreshing(false);
         } else {
             mAdapter.addTracks(tracks);
+            mProgressBar.setVisibility(View.GONE);
         }
     }
 
@@ -137,6 +151,7 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
     @Override
     public void loadMoreData() {
         mIsScrolling = false;
+        mProgressBar.setVisibility(View.VISIBLE);
         String api = StringUtil.genreApi(mGenre.getKey(), LIMIT, ++mOffset);
         mGenrePresenter.getGenres(api);
     }
@@ -149,6 +164,8 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
         mRecyclerView.setAdapter(mAdapter);
         mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mProgressBar = findViewById(R.id.progress_load_more);
+        mProgressBar.setVisibility(View.GONE);
         setLoadMore();
     }
 
@@ -181,6 +198,28 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
 
     @Override
     public void clickDownload(Track track, ImageView imageDownload) {
+        checkPermission();
+        if (mHasPermission && track.isDownload()) {
+            beginDownload();
+            Toast.makeText(this, R.string.notify_begin_download, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.error_download, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION:
+                if (grantResults.length > 0
+                        && grantResults[0] != PackageManager.PERMISSION_DENIED) {
+                    mHasPermission = true;
+                } else checkPermission();
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -218,6 +257,21 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
 
     @Override
     public void notifyStateChanged(Track track, int stateType) {
+        switch (stateType) {
+            case ITracksPlayerManager.StatePlayerType.IDLE:
+                break;
+            case ITracksPlayerManager.StatePlayerType.PLAYING:
+                setItemMiniPlayer(track);
+                mButtonPlaySong.setBackgroundResource(R.drawable.ic_pause);
+                break;
+            case ITracksPlayerManager.StatePlayerType.PAUSE:
+                setItemMiniPlayer(track);
+                mButtonPlaySong.setBackgroundResource(R.drawable.ic_play_button);
+                break;
+            default:
+                setItemMiniPlayer(track);
+                break;
+        }
     }
 
     private void connectService() {
@@ -226,6 +280,15 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
         mTracksServiceManager = new TracksServiceManager(this, intent, connection,
                 Context.BIND_AUTO_CREATE);
         mTracksServiceManager.bindService();
+    }
+
+    private void checkPermission() {
+        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && ContextCompat.checkSelfPermission(this, permissions[0])
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(permissions, REQUEST_PERMISSION);
+        } else mHasPermission = true;
     }
 
     private void setItemMiniPlayer(Track track) {
@@ -278,15 +341,6 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
         mImageSearch.setOnClickListener(this);
     }
 
-    private void initPresenter() {
-        mContentResolverCursor = getApplicationContext().getContentResolver();
-        TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
-                .getInstance(), TrackLocalDataSource.getInstance(getApplicationContext(),
-                mContentResolverCursor));
-        mGenrePresenter = new GenrePresenter(repository);
-        mGenrePresenter.setView(this);
-    }
-
     private void setTrackPlayPause() {
         if (mService.getStateMedia() == ITracksPlayerManager.StatePlayerType.PLAYING) {
             mService.pause();
@@ -295,6 +349,15 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
             mService.start();
             mButtonPlaySong.setBackgroundResource(R.drawable.ic_pause);
         }
+    }
+
+    private void initPresenter() {
+        mContentResolverCursor = getApplicationContext().getContentResolver();
+        TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
+                .getInstance(), TrackLocalDataSource.getInstance(getApplicationContext(),
+                mContentResolverCursor));
+        mGenrePresenter = new GenrePresenter(repository);
+        mGenrePresenter.setView(this);
     }
 
     private void setOnClickToolBar() {
@@ -307,5 +370,29 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
                 onBackPressed();
             }
         });
+    }
+
+    private void beginDownload() {
+        Intent intent = DownloadService.getDownloadIntent(this, mService.getTrack());
+        startService(intent);
+    }
+
+    private boolean isAcceptDownload(String title) {
+        String fileName = StringUtil.append(ROOT_FOLDER, title, MP3_FORMAT);
+        File file = new File(fileName);
+        if (!file.isDirectory() && file.exists()) return confirmDownload();
+        return true;
+    }
+
+    private boolean confirmDownload() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.notify_file_exists)
+                .setMessage(R.string.notify_confirm_download)
+                .setIcon(R.drawable.ic_download_false)
+                .setPositiveButton(R.string.confirm_yes, (DialogInterface.OnClickListener) this)
+                .setNegativeButton(R.string.confirm_no, (DialogInterface.OnClickListener) this)
+                .create();
+        dialog.show();
+        return false;
     }
 }

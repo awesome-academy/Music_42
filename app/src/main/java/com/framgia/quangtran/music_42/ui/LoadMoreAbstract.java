@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 public abstract class LoadMoreAbstract extends AppCompatActivity {
     protected boolean mIsScrolling = false;
     protected RecyclerView mRecyclerView;
+    protected ProgressBar mProgressBar;
     protected int mCurrentItem, mTotalItem, mScrollOutItem;
     protected LinearLayoutManager mLinearLayoutManager;
 

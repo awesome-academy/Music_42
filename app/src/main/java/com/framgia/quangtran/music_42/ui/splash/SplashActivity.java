@@ -49,7 +49,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     void initUI() {
         ContentResolver contentResolver = getApplicationContext().getContentResolver();
         TrackRepository repository = TrackRepository.getInstance(TrackRemoteDataSource
-                .getInstance(), TrackLocalDataSource.getInstance(contentResolver));
+                .getInstance(), TrackLocalDataSource.getInstance(getApplicationContext(), contentResolver));
         mSlashPresenter = new SplashPresenter(repository);
         mSlashPresenter.setView(this);
     }
