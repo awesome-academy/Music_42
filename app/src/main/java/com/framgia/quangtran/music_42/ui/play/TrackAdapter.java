@@ -15,6 +15,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.framgia.quangtran.music_42.R;
 import com.framgia.quangtran.music_42.data.model.Track;
 
+import java.util.Collections;
 import java.util.List;
 
 public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> {
@@ -38,7 +39,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
         }
         View contactView = mInflater.inflate(R.layout.item_recycler_music_home, viewGroup,
                 false);
-        return new ViewHolder(contactView, mTracks, mClickTrackElement);
+        return new ViewHolder(contactView, mClickTrackElement);
     }
 
     @Override
@@ -57,12 +58,11 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
         private ImageView mImageTrack;
         private ConstraintLayout mLayout;
         private ClickTrackElement mClickTrackElement;
-        private List<Track> mTracks;
 
-        public ViewHolder(@NonNull View itemView, List<Track> tracks, ClickTrackElement clickTrackElement) {
+        public ViewHolder(@NonNull View itemView, ClickTrackElement clickTrackElement) {
             super(itemView);
             mClickTrackElement = clickTrackElement;
-            mTracks = tracks;
+            mLayout = itemView.findViewById(R.id.constraint_track);
             mTextTrackName = itemView.findViewById(R.id.text_name_track);
             mTextSingerName = itemView.findViewById(R.id.text_name_singer);
             mImageTrack = itemView.findViewById(R.id.image_track);
@@ -93,6 +93,31 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
             mTextSingerName.setTextColor(Color.WHITE);
             itemView.setBackgroundColor(itemView.getResources().getColor(R.color.black_transparent));
         }
+
+    }
+
+    public void onMove(int oldPosition, int newPosition) {
+        if (oldPosition < newPosition) {
+            for (int i = oldPosition; i < newPosition; i++) {
+                Collections.swap(mTracks, i, i + INDEX_UNIT);
+            }
+        } else {
+            for (int i = oldPosition; i > newPosition; i--) {
+                Collections.swap(mTracks, i, i - INDEX_UNIT);
+            }
+        }
+        notifyItemMoved(oldPosition, newPosition);
+        mDragDropListener.onDropViewHolder(mTracks);
+    }
+
+    public void swipe(int position) {
+        if (mTracks.size() > INDEX_UNIT) {
+            mTracks.remove(position);
+            notifyItemRemoved(position);
+            mDragDropListener.onSwipeViewHolder(mTracks);
+            return;
+        }
+        notifyDataSetChanged();
     }
 
     public interface ClickTrackElement {

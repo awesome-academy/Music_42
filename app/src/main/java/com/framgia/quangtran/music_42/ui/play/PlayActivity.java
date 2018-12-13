@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.framgia.quangtran.music_42.R;
 import com.framgia.quangtran.music_42.data.model.Track;
@@ -41,7 +42,7 @@ import java.util.List;
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener,
         SeekBar.OnSeekBarChangeListener, UIPlayerListener.ControlListener,
-        SimpleItemTouchHelperCallback.ItemTouchListener,
+        SimpleItemTouchHelperCallback.ItemTouchListener, PlayContract.View,
         TrackAdapter.ClickTrackElement, TrackAdapter.OnDragDropListener {
     private static final String EXIST_TRACK = "Exist track in favorite";
     private static final String ROOT_FOLDER = "storage/emulated/0/download/";
@@ -49,6 +50,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private static final int PROGRESS_START = 0;
     private static final int PROGRESS_MAX = 100;
     private static final int DELAY_TIME = 1000;
+    private static final int REQUEST_PERMISSION = 10;
     private ImageView mImageShuffle;
     private ImageView mImagePrevious;
     private ImageView mImageNext;
@@ -69,10 +71,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private TracksService mService;
     private TimeUtils mTimeUtils;
     private TrackAdapter mTrackAdapter;
-    private android.os.Handler mHandler = new android.os.Handler();
-    private static final int REQUEST_PERMISSION = 10;
     private boolean mHasPermission;
     PlayContract.Presenter mPresenter;
+    private android.os.Handler mHandler = new android.os.Handler();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,12 +81,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_play);
         startService();
         initUI();
-        if (Build.VERSION.SDK_INT >= 21) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getResources().getColor(R.color.color_black));
-        }
     }
 
     public static Intent getPlayIntent(Context context) {
@@ -117,23 +112,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 setShuffle();
                 break;
             case R.id.image_previous:
-                mService.previous();
-                mImagePlay.setImageResource(R.drawable.ic_pause);
-                mService.setPlayTrackInfo(mTextTitle, mTextArtist, mImageBackGround, mImageArtwork);
+                setButtonPrevious();
                 break;
             case R.id.image_play:
-                if (mService.getStateMedia() == ITracksPlayerManager.StatePlayerType.PLAYING) {
-                    mService.pause();
-                    mImagePlay.setImageResource(R.drawable.ic_play_button);
-                } else {
-                    mService.start();
-                    mImagePlay.setImageResource(R.drawable.ic_pause);
-                }
+                setButtonPlay();
                 break;
             case R.id.image_next:
-                mService.next();
-                mService.setPlayTrackInfo(mTextTitle, mTextArtist, mImageBackGround, mImageArtwork);
-                mImagePlay.setImageResource(R.drawable.ic_pause);
+                setButtonNext();
                 break;
             case R.id.image_loop:
                 setLoop();
@@ -142,6 +127,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 mDrawerLayout.openDrawer(Gravity.END);
                 break;
             case R.id.image_download:
+                setButtonDownload();
                 break;
             case R.id.image_favorite:
                 addFavoriteTrack();
@@ -154,21 +140,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void addFavoriteTrack() {
-        TrackRepository repository = TrackRepository.getInstance(
-                TrackRemoteDataSource.getInstance(),
-                TrackLocalDataSource.getInstance(getApplicationContext(), getContentResolver())
-        );
-        mPresenter = new PlayPresenter(repository, this);
-        mPresenter.addFavoriteTrack(mService.getTrack());
-    }
-
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
+
     }
 
     @Override
@@ -207,6 +185,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             case TracksPlayerSetting.LoopType.ALL:
                 mImageLoop.setImageResource(R.drawable.loop_all);
                 break;
+            default:
+                break;
         }
     }
 
@@ -225,6 +205,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             case ITracksPlayerManager.StatePlayerType.STOP:
                 mImagePlay.setImageResource(R.drawable.ic_play_button);
                 break;
+            default:
+                break;
         }
     }
 
@@ -232,6 +214,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     public void onClickTrack(int i) {
         mService.play(i);
         mService.setPlayTrackInfo(mTextTitle, mTextArtist, mImageBackGround, mImageArtwork);
+    }
+
+    @Override
+    public void onMove(int oldPosition, int newPosition) {
+        mTrackAdapter.onMove(oldPosition, newPosition);
+    }
+
+    @Override
+    public void swipe(int position, int direction) {
+        mTrackAdapter.swipe(position);
     }
 
     @Override
@@ -259,6 +251,29 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onFailure(String message) {
+        if (message.equals(EXIST_TRACK)) {
+            mPresenter.deleteFavoriteTrack(mService.getTrack());
+        }
+    }
+
+    @Override
+    public void onDeleteTrackSuccess() {
+        Toast.makeText(this, R.string.text_delete_favorite, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFavoriteTrackSuccess() {
+        Toast.makeText(this, R.string.text_add_success, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(mUpdateTimes);
+    }
+
     private void initUI() {
         mDrawerLayout = findViewById(R.id.drawer_play);
         mImageShuffle = findViewById(R.id.image_shuffle);
@@ -282,6 +297,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         mCurrentTime = findViewById(R.id.text_current_time);
         mTotalTime = findViewById(R.id.text_total_time);
         setListener();
+        setStatusBar();
     }
 
     public void startService() {
@@ -315,6 +331,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         mTotalTime.setOnClickListener(this);
     }
 
+    private void setStatusBar() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.color_black));
+        }
+    }
+
     private void startMusic() {
         mService.setPlayTrackInfo(mTextTitle, mTextArtist, mImageBackGround, mImageArtwork);
         mHandler.postDelayed(mUpdateTimes, DELAY_TIME);
@@ -343,6 +368,40 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 mService.setLoop(TracksPlayerSetting.LoopType.NONE);
                 break;
         }
+    }
+
+    private void addFavoriteTrack() {
+        TrackRepository repository = TrackRepository.getInstance(
+                TrackRemoteDataSource.getInstance(),
+                TrackLocalDataSource.getInstance(getApplicationContext(), getContentResolver())
+        );
+        mPresenter = new PlayPresenter(repository, this);
+        mPresenter.addFavoriteTrack(mService.getTrack());
+    }
+
+    private void setButtonPlay() {
+        if (mService.getStateMedia() == ITracksPlayerManager.StatePlayerType.PLAYING) {
+            mService.pause();
+            mImagePlay.setImageResource(R.drawable.ic_play_button);
+        } else {
+            mService.start();
+            mImagePlay.setImageResource(R.drawable.ic_pause);
+        }
+    }
+
+    private void setButtonNext() {
+        mService.next();
+        mService.setPlayTrackInfo(mTextTitle, mTextArtist, mImageBackGround, mImageArtwork);
+        mImagePlay.setImageResource(R.drawable.ic_pause);
+    }
+
+    private void setButtonPrevious() {
+        mService.previous();
+        mImagePlay.setImageResource(R.drawable.ic_pause);
+        mService.setPlayTrackInfo(mTextTitle, mTextArtist, mImageBackGround, mImageArtwork);
+    }
+
+    private void setButtonDownload() {
     }
 
     private void checkPermission() {
@@ -382,10 +441,4 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             mHandler.postDelayed(this, PROGRESS_MAX);
         }
     });
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mHandler.removeCallbacks(mUpdateTimes);
-    }
 }

@@ -9,6 +9,7 @@ public interface PlayContract {
         void onDeleteTrackSuccess();
 
         void onFavoriteTrackSuccess();
+
     }
 
     interface Presenter {
