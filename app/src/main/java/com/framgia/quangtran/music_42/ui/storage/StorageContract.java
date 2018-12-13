@@ -9,15 +9,23 @@ public interface StorageContract {
         void onSuccess(List<Track> data);
 
         void onFailure(String message);
+
+        void addFavoriteTrackSuccess();
+
+        void deleteFavoriteTrackSuccess();
     }
 
     interface Presenter {
         void setView(StorageContract.View view);
 
-        void loadOfflineMusic();
+        void getOfflineTracks();
 
-        void getDownloadTrack();
+        void getDownloadTracks();
 
-        void getFavoriteTrack();
+        void getFavoriteTracks();
+
+        void addFavoriteTrack(Track track);
+
+        void deleteFavoriteTrack(Track track);
     }
 }

@@ -10,17 +10,20 @@ import android.widget.TextView;
 
 import com.framgia.quangtran.music_42.R;
 import com.framgia.quangtran.music_42.data.model.Track;
+import com.framgia.quangtran.music_42.ui.storage.contract.StorageStyle;
 
 import java.util.List;
 
 public class StorageAdapter extends RecyclerView.Adapter<StorageAdapter.ViewHolder> {
+    public static String sKey = "";
     private List<Track> mTracks;
     private LayoutInflater mInflater;
     private StorageClickListener mListener;
 
-    public StorageAdapter(List<Track> tracks, StorageClickListener clickListener) {
-        this.mListener = clickListener;
-        this.mTracks = tracks;
+    public StorageAdapter(String key, List<Track> tracks, StorageClickListener clickListener) {
+        mListener = clickListener;
+        mTracks = tracks;
+        sKey = key;
     }
 
     @NonNull
@@ -31,12 +34,12 @@ public class StorageAdapter extends RecyclerView.Adapter<StorageAdapter.ViewHold
         }
         View contactView = mInflater.inflate(R.layout.item_recycler_music_personal, viewGroup,
                 false);
-        return new StorageAdapter.ViewHolder(contactView,mTracks, mListener);
+        return new StorageAdapter.ViewHolder(contactView, mListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull StorageAdapter.ViewHolder viewHolder, int i) {
-        viewHolder.bindData(mTracks.get(i));
+        viewHolder.bindData(mTracks.get(i), i);
     }
 
     @Override
@@ -49,45 +52,50 @@ public class StorageAdapter extends RecyclerView.Adapter<StorageAdapter.ViewHold
         private TextView mTextSingerName;
         private View mViewTrack;
         private ImageView mImageFavorite;
-        private ImageView mImageDelete;
         private StorageClickListener mListener;
-        private List<Track> mTracks;
+        private int mTrackPosition;
+        private Track mTrack;
 
-        public ViewHolder(@NonNull View itemView,List<Track> tracks, StorageClickListener storageClickListener) {
+        public ViewHolder(@NonNull View itemView, StorageClickListener storageClickListener) {
             super(itemView);
+            mTrack = new Track();
             mListener = storageClickListener;
             mViewTrack = itemView.findViewById(R.id.view_track);
             mTextTrackName = itemView.findViewById(R.id.text_name_track);
             mTextSingerName = itemView.findViewById(R.id.text_name_singer);
-            mImageFavorite = itemView.findViewById(R.id.image_heart);
-            mImageDelete = itemView.findViewById(R.id.image_delete);
+            mImageFavorite = itemView.findViewById(R.id.image_personal_favorite);
             mImageFavorite.setOnClickListener(this);
-            mImageDelete.setOnClickListener(this);
             mViewTrack.setOnClickListener(this);
-            mTracks = tracks;
+            if(StorageAdapter.sKey.equals(StorageStyle.StorageKey.FAVORITE)){
+                mImageFavorite.setImageResource(R.drawable.ic_minus);
+            }
         }
 
-        public void bindData(Track track) {
-            if (track != null) {
-                mTextTrackName.setText(track.getTitle());
-                mTextSingerName.setText(track.getUserName());
-            }
+        public void bindData(final Track track, final int i) {
+            mTrackPosition = i;
+            mTrack = track;
+            mTextTrackName.setText(track.getTitle());
+            mTextSingerName.setText(track.getUserName());
         }
 
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.view_track:
-                    mListener.onClickPlayMusic(mTracks);
+                    mListener.onClickPlayMusic(mTrackPosition);
+                    break;
+                case R.id.image_personal_favorite:
+                    mListener.onClickImageFavorite(mTrack, mTrackPosition);
                     break;
                 default:
                     break;
             }
         }
-
     }
 
     public interface StorageClickListener {
-        void onClickPlayMusic(List<Track> tracks);
+        void onClickPlayMusic(int i);
+
+        void onClickImageFavorite(Track track, int i);
     }
 }
