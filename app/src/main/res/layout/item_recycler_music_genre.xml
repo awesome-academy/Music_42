@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/dp_10">
+    android:layout_marginTop="@dimen/dp_5">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/image_heart"
+            app:layout_constraintRight_toLeftOf="@id/image_favorite"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -55,7 +55,7 @@
             app:layout_constraintTop_toBottomOf="@+id/text_name_track" />
 
         <ImageView
-            android:id="@+id/image_heart"
+            android:id="@+id/image_favorite"
             android:layout_width="@dimen/dp_25"
             android:layout_height="@dimen/dp_25"
             android:layout_marginRight="@dimen/dp_10"

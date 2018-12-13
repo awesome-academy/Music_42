@@ -20,7 +20,7 @@
     <TextView
         android:id="@+id/text_name_track"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/sp_18"
         android:layout_marginLeft="@dimen/dp_5"
         android:textSize="@dimen/sp_15"
         android:textStyle="bold"
@@ -34,7 +34,7 @@
     <TextView
         android:id="@+id/text_name_singer"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/sp_15"
         android:layout_below="@id/text_name_track"
         android:textSize="@dimen/sp_12"
         app:layout_constraintBottom_toBottomOf="@id/image_track"
@@ -43,4 +43,3 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_name_track" />
 </android.support.constraint.ConstraintLayout>
-
