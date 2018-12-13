@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface PersonalContract {
     interface View {
-        void onSuccess(List<Track> tracks);
+        void onSuccessId(List<Long> idTracks);
+
+        void onRecentTracksSuccess(List<Track> idTracks);
 
         void onFailure(String message);
     }
@@ -14,6 +16,8 @@ public interface PersonalContract {
     interface Presenter {
         void setView(View view);
 
-        void loadOfflineMusic();
+        void getRecentTracks();
+
+        void loadRecentTracks(String api);
     }
 }

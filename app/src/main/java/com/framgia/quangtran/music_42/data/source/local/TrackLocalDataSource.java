@@ -5,6 +5,9 @@ import android.content.Context;
 
 import com.framgia.quangtran.music_42.data.model.Track;
 import com.framgia.quangtran.music_42.data.source.TrackDataSource;
+import com.framgia.quangtran.music_42.util.MySharedPreferences;
+
+import java.util.List;
 
 public class TrackLocalDataSource implements TrackDataSource.Local {
     private static final String EXIST_TRACK = "Exist track in favorite";
@@ -47,5 +50,12 @@ public class TrackLocalDataSource implements TrackDataSource.Local {
     @Override
     public void deleteFavoriteTrack(Track track, TrackDataSource.DataCallback<Boolean> callback) {
         sDbHelper.deleteTrack(track, callback);
+    }
+
+    @Override
+    public void getRecentTrack(Context context, TrackDataSource.DataCallback<Long> callback) {
+        MySharedPreferences mPreferences = new MySharedPreferences(context);
+        List<Long> idRecentTracks = mPreferences.getData();
+        callback.onSuccess(idRecentTracks);
     }
 }
