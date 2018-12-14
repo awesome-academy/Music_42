@@ -15,5 +15,6 @@ public final class FavoriteReaderContract {
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_DOWNLOADABLE = "downloadable";
         public static final String COLUMN_NAME_DOWNLOAD_URL = "download_url";
+        public static final String COLUMN_NAME_STREAM_URL = "stream_url";
     }
 }

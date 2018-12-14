@@ -283,7 +283,7 @@ public class GenreActivity extends LoadMoreAbstract implements GenreContract.Vie
     }
 
     private void checkPermission() {
-        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && ContextCompat.checkSelfPermission(this, permissions[0])
                 != PackageManager.PERMISSION_GRANTED) {

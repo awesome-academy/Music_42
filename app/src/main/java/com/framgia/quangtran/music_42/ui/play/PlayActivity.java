@@ -408,18 +408,20 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setButtonDownload() {
         checkPermission();
-        if (mHasPermission && mService.getTrack().isDownload()) {
+        if (mHasPermission) {
             beginDownload();
             Toast.makeText(this, R.string.notify_begin_download,
                     Toast.LENGTH_SHORT).show();
+            return;
         } else {
             Toast.makeText(this, R.string.error_download,
                     Toast.LENGTH_SHORT).show();
+            return;
         }
     }
 
     private void checkPermission() {
-        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && ContextCompat.checkSelfPermission(this, permissions[0])
                 != PackageManager.PERMISSION_GRANTED) {

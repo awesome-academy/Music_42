@@ -34,6 +34,7 @@ public class FavoriteTrackDbHelper extends SQLiteOpenHelper {
                     FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_ARTWORK_URL + TEXT_TYPE + COMMA +
                     FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_USER_NAME + TEXT_TYPE + COMMA +
                     FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA +
+                    FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_STREAM_URL + TEXT_TYPE + COMMA +
                     FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_DOWNLOADABLE + TEXT_TYPE + COMMA +
                     FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_DOWNLOAD_URL + TEXT_TYPE + COMMA +
                     FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_IS_OFFLINE + TEXT_TYPE +
@@ -67,6 +68,8 @@ public class FavoriteTrackDbHelper extends SQLiteOpenHelper {
         values.put(FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_USER_NAME, track.getUserName());
         values.put(FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_ARTWORK_URL,
                 track.getArtWorkUrl());
+        values.put(FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_STREAM_URL,
+                track.getStreamUrl());
         values.put(FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_DOWNLOADABLE,
                 track.isDownload());
         values.put(FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_DOWNLOAD_URL,
@@ -86,6 +89,7 @@ public class FavoriteTrackDbHelper extends SQLiteOpenHelper {
                 FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_TITLE,
                 FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_USER_NAME,
                 FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_ARTWORK_URL,
+                FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_STREAM_URL,
                 FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_DOWNLOADABLE,
                 FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_DOWNLOAD_URL
         };
@@ -114,6 +118,9 @@ public class FavoriteTrackDbHelper extends SQLiteOpenHelper {
             String artworkUrl = cursor.getString(
                     cursor.getColumnIndexOrThrow(
                             FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_ARTWORK_URL));
+            String streamUrl = cursor.getString(
+                    cursor.getColumnIndexOrThrow(
+                            FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_STREAM_URL));
             String downloadable = cursor.getString(
                     cursor.getColumnIndexOrThrow(
                             FavoriteReaderContract.FavoriteEntry.COLUMN_NAME_DOWNLOADABLE));
@@ -124,10 +131,10 @@ public class FavoriteTrackDbHelper extends SQLiteOpenHelper {
             track.setId(Long.valueOf(id));
             track.setTitle(title);
             track.setUserName(artist);
-            track.setTitle(title);
             track.setArtWorkUrl(artworkUrl);
             track.setDownload(Boolean.valueOf(downloadable));
             track.setDownLoadUrl(downloadUrl);
+            track.setStreamUrl(streamUrl);
             track.setOffline(Boolean.valueOf(isOffline));
             tracks.add(track);
         }
